@@ -1,0 +1,154 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Teachers Portal - Tyneceploh Educational Foundation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fff0f5;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #8b5e3c;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+    }
+    main {
+      padding: 1rem;
+    }
+    form {
+      background-color: #ffe6f0;
+      padding: 1rem;
+      border-radius: 8px;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      background-color: #8b5e3c;
+      color: white;
+      border: none;
+      padding: 0.7rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #70482e;
+    }
+    .grades-list {
+      max-width: 600px;
+      margin: 2rem auto;
+      background-color: #fff5fa;
+      padding: 1rem;
+      border-radius: 8px;
+    }
+    .grades-list h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .grades-list ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    .grades-list li {
+      background-color: #f9d9e6;
+      margin-bottom: 0.5rem;
+      padding: 0.5rem;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Teachers Portal</h1>
+    <p>Submit Student Grades</p>
+  </header>  <main>
+    <form onsubmit="submitGrades(event)">
+      <label for="teacherName">Teacher Name</label>
+      <input type="text" id="teacherName" required><label for="class">Class</label>
+  <select id="class" required>
+    <option value="">Select Class</option>
+    <option>Grade 1</option>
+    <option>Grade 2</option>
+    <option>Grade 3</option>
+    <option>Grade 4</option>
+    <option>Grade 5</option>
+    <option>Grade 6</option>
+    <option>Grade 7</option>
+    <option>Grade 8</option>
+    <option>Grade 9</option>
+  </select>
+
+  <label for="studentName">Student Name</label>
+  <input type="text" id="studentName" required>
+
+  <label for="subject">Subject</label>
+  <input type="text" id="subject" required>
+
+  <label for="grade">Grade</label>
+  <input type="text" id="grade" required>
+
+  <button type="submit">Submit Grade</button>
+</form>
+
+<div class="grades-list" id="gradesList" style="display:none">
+  <h2>Submitted Grades</h2>
+  <ul id="gradesOutput"></ul>
+</div>
+
+  </main>  <script>
+    function submitGrades(event) {
+      event.preventDefault();
+
+      const teacher = document.getElementById('teacherName').value;
+      const student = document.getElementById('studentName').value;
+      const className = document.getElementById('class').value;
+      const subject = document.getElementById('subject').value;
+      const grade = document.getElementById('grade').value;
+
+      const gradeEntry = `${student} | ${className} | ${subject} | Grade: ${grade} (by ${teacher})`;
+
+      let grades = JSON.parse(localStorage.getItem('submittedGrades')) || [];
+      grades.push(gradeEntry);
+      localStorage.setItem('submittedGrades', JSON.stringify(grades));
+
+      alert("Grade submitted! Sent to principal for approval.");
+      document.querySelector("form").reset();
+      showGrades();
+    }
+
+    function showGrades() {
+      const gradesList = document.getElementById('gradesList');
+      const gradesOutput = document.getElementById('gradesOutput');
+      const grades = JSON.parse(localStorage.getItem('submittedGrades')) || [];
+
+      if (grades.length > 0) {
+        gradesList.style.display = 'block';
+        gradesOutput.innerHTML = '';
+        grades.forEach(g => {
+          const li = document.createElement('li');
+          li.textContent = g;
+          gradesOutput.appendChild(li);
+        });
+      } else {
+        gradesList.style.display = 'none';
+      }
+    }
+
+    window.onload = showGrades;
+  </script></body>
+  </html>
