@@ -22,13 +22,14 @@
     }
     textarea {
       width: 100%;
-      height: 200px;
+      height: 250px;
       padding: 15px;
       font-size: 1.1rem;
       border-radius: 10px;
       border: 2px solid brown;
       resize: vertical;
       margin-bottom: 20px;
+      font-family: inherit;
     }
     button {
       background: brown;
@@ -68,7 +69,7 @@
   <nav><a href="principal-dashboard.html">← Back to Dashboard</a></nav>
 
   <form id="announcementForm">
-    <textarea id="announcementText" placeholder="Enter announcement here..."></textarea>
+    <textarea id="announcementText" placeholder="Enter all announcements here..."></textarea>
     <br />
     <button type="submit">Save Announcement</button>
   </form>
@@ -79,15 +80,15 @@
     const textarea = document.getElementById('announcementText');
     const message = document.getElementById('message');
 
-    // Load announcement from localStorage on page load
+    // Load saved announcements from localStorage
     window.onload = () => {
-      const savedAnnouncement = localStorage.getItem('announcement');
+      const savedAnnouncement = localStorage.getItem('tyneceplohAnnouncement');
       if (savedAnnouncement) {
         textarea.value = savedAnnouncement;
       }
     };
 
-    // Save announcement to localStorage on submit
+    // Save announcement to localStorage
     document.getElementById('announcementForm').addEventListener('submit', function(e) {
       e.preventDefault();
       const text = textarea.value.trim();
@@ -95,7 +96,7 @@
         alert('Announcement cannot be empty!');
         return;
       }
-      localStorage.setItem('announcement', text);
+      localStorage.setItem('tyneceplohAnnouncement', text);
       message.textContent = 'Announcement saved successfully!';
       setTimeout(() => {
         message.textContent = '';
