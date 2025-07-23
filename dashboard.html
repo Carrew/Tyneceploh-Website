@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Principal Dashboard - Tyneceploh</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: #fff2f4;
+      color: #3d1c1c;
+    }
+    header {
+      background-color: #cc0066;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 1.8em;
+      font-weight: bold;
+    }
+    main {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    section {
+      margin-bottom: 30px;
+    }
+    h2 {
+      color: #cc0066;
+      margin-bottom: 10px;
+    }
+    textarea, input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background: #cc0066;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #a60052;
+    }
+    .logout {
+      display: inline-block;
+      margin-top: 20px;
+      text-decoration: none;
+      color: #cc0066;
+      font-weight: bold;
+    }
+    .logout:hover {
+      color: #a60052;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  Tyneceploh Principal Dashboard
+</header>
+
+<main>
+  <section>
+    <h2>Welcome, Principal</h2>
+    <p>You are successfully logged in. Manage announcements and financial info below.</p>
+  </section>
+
+  <section>
+    <h2>Edit Announcements</h2>
+    <textarea id="announcementText" rows="5" placeholder="Update announcements here..."></textarea>
+    <button onclick="saveAnnouncement()">Save Announcement</button>
+  </section>
+
+  <section>
+    <h2>Financial Information</h2>
+    <label>Entrance Fee (LRD):</label>
+    <input type="number" value="2500">
+    <label>Registration Period:</label>
+    <input type="text" value="July 22 – September 4, 2025">
+    <label>Classes Resume:</label>
+    <input type="text" value="September 8, 2025 | 7:45 AM to 3:10 PM">
+    <label>Entrance Exam Dates:</label>
+    <input type="text" value="July 30, August 7, August 22">
+    <button onclick="alert('Financial info saved (simulation).')">Save Financial Info</button>
+  </section>
+
+  <a class="logout" href="index.html">← Return to Homepage</a>
+</main>
+
+<script>
+  function saveAnnouncement() {
+    let announcement = document.getElementById("announcementText").value;
+    alert("Announcement saved:\n" + announcement);
+    // In real case, this would be saved to a server
+  }
+</script>
+
+</body>
+</html>
