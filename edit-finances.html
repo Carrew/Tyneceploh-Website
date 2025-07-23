@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Edit Financial Records</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fff0f5;
+      color: #4b004b;
+      padding: 20px;
+    }
+    header {
+      background-color: pink;
+      color: brown;
+      padding: 15px;
+      text-align: center;
+      font-size: 1.6rem;
+      font-weight: bold;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 1rem;
+      margin: 5px;
+      border-radius: 8px;
+      border: 2px solid brown;
+    }
+    button {
+      background-color: brown;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #a52a2a;
+    }
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 12px;
+      border: 1px solid brown;
+      text-align: left;
+    }
+    th {
+      background-color: pink;
+    }
+    .delete-btn {
+      background-color: red;
+      border: none;
+      color: white;
+      padding: 6px 12px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .delete-btn:hover {
+      background-color: darkred;
+    }
+  </style>
+</head>
+<body>
+
+  <header>Manage Financial Records</header>
+
+  <nav><a href="principal-dashboard.html">← Back to Dashboard</a></nav>
+
+  <h3>Add New Record</h3>
+  <input type="text" id="recordName" placeholder="Record Title (e.g. Entrance Fee)">
+  <input type="number" id="amount" placeholder="Amount (e.g. 2500)">
+  <input type="date" id="date">
+  <button onclick="addRecord()">Add</button>
+
+  <h3>All Financial Records</h3>
+  <table id="recordsTable">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Amount (LRD)</th>
+        <th>Date</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const records = JSON.parse(localStorage.getItem("finances")) || [];
+
+    function saveRecords() {
+      localStorage.setItem("finances", JSON.stringify(records));
+    }
+
+    function displayRecords() {
+      const tbody = document.querySelector("#recordsTable tbody");
+      tbody.innerHTML = "";
+      records.forEach((rec, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${rec.name}</td>
+          <td>${rec.amount}</td>
+          <td>${rec.date}</td>
+          <td><button class="delete-btn" onclick="deleteRecord(${index})">Delete</button></td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function addRecord() {
+      const name = document.getElementById("recordName").value.trim();
+      const amount = document.getElementById("amount").value;
+      const date = document.getElementById("date").value;
+      if (!name || !amount || !date) {
+        alert("Please fill out all fields");
+        return;
+      }
+      records.push({ name, amount, date });
+      saveRecords();
+      displayRecords();
+      document.getElementById("recordName").value = "";
+      document.getElementById("amount").value = "";
+      document.getElementById("date").value = "";
+    }
+
+    function deleteRecord(index) {
+      records.splice(index, 1);
+      saveRecords();
+      displayRecords();
+    }
+
+    displayRecords();
+  </script>
+
+</body>
+</html>
