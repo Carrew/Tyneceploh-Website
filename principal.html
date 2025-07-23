@@ -1,85 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Principal Login - Tyneceploh</title>
-  <link rel="stylesheet" href="style.css" />
-  <style>
-    body {
-      background-color: #fce4ec;
-      font-family: 'Segoe UI', sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    .login-box {
-      background: white;
-      padding: 40px;
-      border-radius: 15px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.2);
-      max-width: 400px;
-      width: 90%;
-    }
-    h2 {
-      text-align: center;
-      color: #880e4f;
-    }
-    input[type="text"],
-    input[type="password"] {
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      border: 1px solid #d81b60;
-      border-radius: 8px;
-    }
-    .btn {
-      width: 100%;
-      padding: 12px;
-      background-color: #d81b60;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-    }
-    .btn:hover {
-      background-color: #ad1457;
-    }
-    .error {
-      color: red;
-      margin-top: 10px;
-      text-align: center;
-      display: none;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <title>Principal Login - Tyneceploh School</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="login-box">
+  <div class="container">
     <h2>Principal Login</h2>
-    <form onsubmit="return validateLogin()">
-      <input type="text" id="username" placeholder="Enter Username" required />
-      <input type="password" id="password" placeholder="Enter Password" required />
-      <button class="btn" type="submit">Login</button>
-      <p class="error" id="error-msg">Invalid credentials!</p>
+    <form id="principalLoginForm">
+      <label for="username">Username:</label>
+      <input type="text" id="username" placeholder="Enter username" required><br>
+
+      <label for="password">Password:</label>
+      <input type="password" id="password" placeholder="Enter password" required><br>
+
+      <button type="submit">Login</button>
     </form>
+    <p id="loginStatus"></p>
   </div>
 
   <script>
-    function validateLogin() {
-      const username = document.getElementById("username").value.trim();
-      const password = document.getElementById("password").value.trim();
-      const errorMsg = document.getElementById("error-msg");
+    document.getElementById("principalLoginForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
 
-      // Example login: user = "admin", pass = "tyneceploh2025"
-      if (username === "admin" && password === "tyneceploh2025") {
-        window.location.href = "dashboard.html"; // Redirect (you can create this later)
-        return false;
+      // Set your own admin login info here
+      if (username === "admin" && password === "12345") {
+        window.location.href = "finance.html"; // Replace with principal dashboard or finance page
       } else {
-        errorMsg.style.display = "block";
-        return false;
+        document.getElementById("loginStatus").textContent = "Invalid login. Try again.";
       }
-    }
+    });
   </script>
 </body>
 </html>
