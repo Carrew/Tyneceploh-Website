@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Login - Tyneceploh</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="login-container">
+    <h2>Student Report Access</h2>
+    <form action="results.html" method="GET" onsubmit="return validatePIN()">
+      <label for="student-name">Full Name:</label>
+      <input type="text" id="student-name" name="student-name" placeholder="Enter full name" required />
+
+      <label for="pin">Access PIN:</label>
+      <input type="password" id="pin" name="pin" placeholder="Enter PIN" required />
+
+      <button type="submit">View Report</button>
+    </form>
+    <p class="note">Only students with valid PINs can access report cards.</p>
+  </div>
+
+  <script>
+    function validatePIN() {
+      const pin = document.getElementById('pin').value;
+      const allowedPINs = ["1234", "4321", "2025"]; // You can replace or extend these
+      if (!allowedPINs.includes(pin)) {
+        alert("Invalid PIN. Please try again.");
+        return false;
+      }
+      return true;
+    }
+  </script>
+</body>
+</html>
