@@ -105,4 +105,111 @@
   </script>
 
 </body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Edit Announcements - Tyneceploh</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #fff0f5;
+      color: #4b004b;
+      margin: 0;
+      padding: 20px;
+    }
+    header {
+      background: pink;
+      color: brown;
+      padding: 20px;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    textarea {
+      width: 100%;
+      height: 250px;
+      padding: 15px;
+      font-size: 1.1rem;
+      border-radius: 10px;
+      border: 2px solid brown;
+      resize: vertical;
+      margin-bottom: 20px;
+      font-family: inherit;
+    }
+    button {
+      background: brown;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      box-shadow: 1px 1px 6px #b30059;
+    }
+    button:hover {
+      background: #8b004b;
+    }
+    nav {
+      margin-bottom: 20px;
+    }
+    nav a {
+      color: brown;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    #message {
+      margin-top: 15px;
+      color: green;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <header>Edit Announcements</header>
+
+  <nav><a href="principal-dashboard.html">← Back to Dashboard</a></nav>
+
+  <form id="announcementForm">
+    <textarea id="announcementText" placeholder="Enter all announcements here..."></textarea>
+    <br />
+    <button type="submit">Save Announcement</button>
+  </form>
+
+  <div id="message"></div>
+
+  <script>
+    const textarea = document.getElementById('announcementText');
+    const message = document.getElementById('message');
+
+    // Load saved announcements from localStorage
+    window.onload = () => {
+      const savedAnnouncement = localStorage.getItem('tyneceplohAnnouncement');
+      if (savedAnnouncement) {
+        textarea.value = savedAnnouncement;
+      }
+    };
+
+    // Save announcement to localStorage
+    document.getElementById('announcementForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const text = textarea.value.trim();
+      if (text.length === 0) {
+        alert('Announcement cannot be empty!');
+        return;
+      }
+      localStorage.setItem('tyneceplohAnnouncement', text);
+      message.textContent = 'Announcement saved successfully!';
+      setTimeout(() => {
+        message.textContent = '';
+      }, 3000);
+    });
+  </script>
+
+</body>
 </html>
