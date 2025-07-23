@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Announcements</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+    h1 {
+      color: #333;
+    }
+    textarea {
+      width: 100%;
+      height: 150px;
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: brown;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    .status {
+      margin-top: 20px;
+      color: green;
+    }
+  </style>
+</head>
+<body>
+  <h1>Edit Announcements</h1>
+  <textarea id="announcementInput" placeholder="Type your new announcement here..."></textarea>
+  <br>
+  <button onclick="saveAnnouncement()">Save</button>
+  <div class="status" id="statusMessage"></div>
+
+  <script>
+    function saveAnnouncement() {
+      const newAnnouncement = document.getElementById('announcementInput').value;
+
+      // Simulated saving to localStorage (note: GitHub Pages does not support server-side saving)
+      localStorage.setItem('latestAnnouncement', newAnnouncement);
+      document.getElementById('statusMessage').innerText = 'Announcement saved locally!';
+
+      // Optional: Redirect or alert
+      alert('Saved! But remember this only works on this browser using local storage.');
+    }
+
+    // Load existing announcement if available
+    window.onload = function () {
+      const saved = localStorage.getItem('latestAnnouncement');
+      if (saved) {
+        document.getElementById('announcementInput').value = saved;
+      }
+    }
+  </script>
+</body>
+</html>
