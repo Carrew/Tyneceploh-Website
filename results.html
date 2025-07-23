@@ -1,0 +1,51 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Results Checker - Tyneceploh Educational Foundation</title>
+<link rel="stylesheet" href="style.css" />
+<script defer src="script.js"></script>
+</head>
+<body>
+<header>
+  <h1>Results Checker</h1>
+  <nav>
+    <a href="index.html">Home</a> |
+    <a href="about.html">About</a> |
+    <a href="results.html">Results Checker</a> |
+    <a href="calendar.html">Academic Calendar</a> |
+    <a href="finance.html">Financial Records</a>
+  </nav>
+</header>
+<main>
+  <section>
+    <p>Enter your Student ID and PIN to view your results:</p>
+    <form id="results-form">
+      <input type="text" id="student-id" placeholder="Student ID" required />
+      <input type="password" id="student-pin" placeholder="PIN" required />
+      <button type="submit">Check Results</button>
+    </form>
+  </section>
+  <section id="results-section" style="display:none;">
+    <h2>Student Results</h2>
+    <table id="results-table" border="1">
+      <thead>
+        <tr>
+          <th>Subject</th>
+          <th>Score</th>
+        </tr>
+      </thead>
+      <tbody id="results-body">
+      </tbody>
+    </table>
+    <button id="print-results">Print Results</button>
+  </section>
+  <section id="error-message" style="color:red;"></section>
+</main>
+<footer>
+  <p>© 2025 Tyneceploh Educational Foundation</p>
+</footer>
+</body>
+</html>
