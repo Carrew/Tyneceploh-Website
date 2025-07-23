@@ -2,131 +2,93 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Tyneceploh Educational Foundation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Edit Announcements - Principal Only</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #ffe6f0;
-      color: #4d0039;
-      margin: 0;
-      padding: 0;
-    }
-
-    header {
-      background-color: #cc6699;
       padding: 20px;
-      text-align: center;
+      background-color: #f4f4f4;
+      color: #4b004b;
     }
-
-    header h1 {
-      margin: 0;
-      font-size: 2em;
-      color: white;
+    #editorSection {
+      display: none;
+      margin-top: 20px;
     }
-
-    nav {
-      background-color: #ffb3cc;
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      padding: 10px 0;
-      flex-wrap: wrap;
-    }
-
-    nav a {
-      text-decoration: none;
-      color: #4d0039;
-      font-weight: bold;
-      padding: 8px 16px;
-      background-color: #ffe6f0;
-      border-radius: 5px;
-      border: 1px solid #cc6699;
-    }
-
-    nav a:hover {
-      background-color: #cc6699;
-      color: white;
-    }
-
-    main {
-      padding: 20px;
-    }
-
-    section {
-      margin-bottom: 30px;
-    }
-
-    h2 {
-      border-bottom: 2px solid #cc6699;
-      padding-bottom: 5px;
-    }
-
-    footer {
-      background-color: #cc6699;
-      color: white;
-      text-align: center;
-      padding: 10px;
-      position: relative;
-      bottom: 0;
+    textarea {
       width: 100%;
+      height: 150px;
+      font-size: 16px;
+      padding: 10px;
+      border: 2px solid brown;
+      border-radius: 8px;
+      resize: vertical;
     }
-
-    .quote-box {
-      background-color: white;
-      padding: 15px;
-      border-left: 5px solid #cc6699;
-      margin: 15px 0;
+    button {
+      margin-top: 10px;
+      background-color: brown;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      cursor: pointer;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+    #accessDenied {
+      color: red;
+      font-weight: bold;
+      display: none;
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <h1>Tyneceploh Educational Foundation</h1>
-  </header>
+  <h1>Edit Announcements (Principal Only)</h1>
 
-  <nav>
-    <a href="announcement.html">Announcement</a>
-    <a href="principal.html">Principal</a>
-    <a href="admin-dashboard.html">Dashboard</a>
-    <a href="edit-announcements.html">Edit Announcements</a>
-    <a href="academic.html">Academics</a>
-    <a href="results.html">Results</a>
-  </nav>
+  <div id="passwordSection">
+    <label for="passwordInput">Enter Principal Password:</label><br/>
+    <input type="password" id="passwordInput" placeholder="Password" />
+    <button onclick="checkPassword()">Login</button>
+  </div>
 
-  <main>
-    <section>
-      <h2>Welcome</h2>
-      <p>Welcome to the official website of Tyneceploh Educational Foundation. We nurture future leaders from Nursery to 9th Grade with dedication, excellence, and purpose.</p>
-    </section>
+  <div id="editorSection">
+    <textarea id="announcementText" placeholder="Enter announcements here..."></textarea>
+    <br />
+    <button onclick="saveAnnouncement()">Save Announcement</button>
+    <div id="message" style="color:green; margin-top:10px;"></div>
+  </div>
 
-    <section>
-      <h2>Our Vision</h2>
-      <p>To empower students to become productive citizens, equipped with knowledge, character, and the courage to transform society.</p>
-    </section>
-
-    <section>
-      <h2>Quotes & Announcements</h2>
-      <div class="quote-box">
-        “Education is the most powerful weapon which you can use to change the world.” – Nelson Mandela
-      </div>
-      <div class="quote-box" id="latestAnnouncement">
-        <!-- Dynamic announcement (optional via script or static fallback) -->
-        Stay tuned for our latest updates...
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    &copy; 2025 Tyneceploh Educational Foundation. All rights reserved.
-  </footer>
+  <div id="accessDenied">Access Denied. Incorrect password.</div>
 
   <script>
-    // Optional: Load saved announcement from local storage
-    const announcement = localStorage.getItem('latestAnnouncement');
-    if (announcement) {
-      document.getElementById('latestAnnouncement').innerText = announcement;
+    const correctPassword = "principal123"; // Change this to your real password
+
+    function checkPassword() {
+      const entered = document.getElementById('passwordInput').value;
+      if (entered === correctPassword) {
+        document.getElementById('passwordSection').style.display = 'none';
+        document.getElementById('editorSection').style.display = 'block';
+        document.getElementById('accessDenied').style.display = 'none';
+
+        // Load announcement from localStorage
+        const saved = localStorage.getItem('tyneceplohAnnouncement');
+        if (saved) {
+          document.getElementById('announcementText').value = saved;
+        }
+      } else {
+        document.getElementById('accessDenied').style.display = 'block';
+      }
+    }
+
+    function saveAnnouncement() {
+      const text = document.getElementById('announcementText').value.trim();
+      if (!text) {
+        alert('Announcement cannot be empty!');
+        return;
+      }
+      localStorage.setItem('tyneceplohAnnouncement', text);
+      document.getElementById('message').textContent = 'Announcement saved successfully!';
     }
   </script>
 
