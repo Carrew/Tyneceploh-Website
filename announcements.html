@@ -1,0 +1,47 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Announcements - Tyneceploh Educational Foundation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #fff0f5; }
+    #announcementList {
+      background: #ffe6f0;
+      border-radius: 10px;
+      padding: 15px;
+      max-width: 600px;
+      margin: 0 auto;
+      list-style: none;
+    }
+    #announcementList li {
+      padding: 10px;
+      border-bottom: 1px solid #8b5e3c;
+      color: #8b5e3c;
+      white-space: pre-line;
+    }
+  </style>
+</head>
+<body>
+  <h1>Latest Announcements</h1>
+  <ul id="announcementList">Loading announcements...</ul>
+
+  <script>
+    window.onload = () => {
+      const list = document.getElementById('announcementList');
+      const announcements = JSON.parse(localStorage.getItem('announcements')) || [];
+      if (announcements.length === 0) {
+        list.innerHTML = '<li>No announcements yet.</li>';
+        return;
+      }
+      list.innerHTML = '';
+      announcements.forEach(text => {
+        const li = document.createElement('li');
+        li.textContent = text;
+        list.appendChild(li);
+      });
+    };
+  </script>
+</body>
+</html>
