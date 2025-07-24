@@ -1,157 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Principal Dashboard - Tyneceploh Educational Foundation</title>
+  <meta charset="UTF-8">
+  <title>Principal Dashboard - Tyneceploh School</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    /* Reset */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #fff0f6;
-      color: #4d0039;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    header {
-      background-color: #b35979;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fff0f5;
       padding: 20px;
       text-align: center;
-      color: #fff;
-      font-size: 1.8rem;
-      font-weight: bold;
-      letter-spacing: 1.2px;
-      box-shadow: 0 2px 5px rgba(179, 89, 121, 0.5);
     }
-
-    nav {
-      background-color: #e6a8bb;
-      padding: 15px 10px;
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      flex-wrap: wrap;
-      box-shadow: inset 0 -3px 5px rgba(179, 89, 121, 0.3);
+    h1 {
+      color: #8b5e3c;
     }
-
-    nav a {
-      text-decoration: none;
+    .dashboard {
+      display: grid;
+      gap: 15px;
+      max-width: 400px;
+      margin: 30px auto;
+    }
+    .dashboard a {
+      display: block;
+      padding: 15px;
       background-color: #ffe6f0;
-      color: #4d0039;
-      font-weight: 600;
-      padding: 10px 18px;
-      border-radius: 8px;
-      border: 2px solid #b35979;
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 3px rgba(179, 89, 121, 0.3);
-    }
-
-    nav a:hover {
-      background-color: #b35979;
-      color: white;
-      box-shadow: 0 4px 8px rgba(179, 89, 121, 0.7);
-      transform: translateY(-2px);
-    }
-
-    main {
-      flex-grow: 1;
-      padding: 30px 20px;
-      max-width: 1000px;
-      margin: 0 auto;
-      background-color: #fff0f6;
-    }
-
-    h2 {
-      color: #b35979;
-      margin-bottom: 15px;
-      font-size: 1.6rem;
-      border-bottom: 3px solid #b35979;
-      padding-bottom: 6px;
-      letter-spacing: 1px;
-    }
-
-    .welcome {
-      font-size: 1.2rem;
-      margin-bottom: 25px;
-      color: #662244;
-      font-style: italic;
-    }
-
-    .info-box {
-      background-color: #ffe6f0;
-      padding: 20px;
-      margin-bottom: 20px;
+      color: #8b5e3c;
       border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(179, 89, 121, 0.2);
-      line-height: 1.5;
+      text-decoration: none;
+      font-weight: bold;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: all 0.2s ease;
     }
-
-    footer {
-      background-color: #b35979;
-      color: white;
-      text-align: center;
-      padding: 12px;
-      font-size: 0.9rem;
-      margin-top: auto;
-      user-select: none;
-      box-shadow: 0 -2px 5px rgba(179, 89, 121, 0.5);
-    }
-
-    /* Responsive */
-    @media (max-width: 600px) {
-      nav {
-        flex-direction: column;
-        gap: 12px;
-      }
-
-      main {
-        padding: 20px 10px;
-      }
+    .dashboard a:hover {
+      background-color: #ffd4e0;
     }
   </style>
 </head>
 <body>
 
-<header>
-  Principal Dashboard
-</header>
+  <h1>Principal Dashboard</h1>
 
-<nav>
-  <a href="announcement.html" target="_blank" rel="noopener">View Announcements</a>
-  <a href="edit-announcements.html" target="_blank" rel="noopener">Edit Announcements</a>
-  <a href="students.html" target="_blank" rel="noopener">Manage Students</a>
-  <a href="financial-records.html" target="_blank" rel="noopener">Financial Records</a>
-  <a href="results.html" target="_blank" rel="noopener">Results Checker</a>
-  <a href="logout.html">Logout</a>
-</nav>
-
-<main>
-  <h2>Welcome, Principal</h2>
-  <p class="welcome">Thank you for your leadership at Tyneceploh Educational Foundation. Use the links above to navigate through your dashboard functions.</p>
-
-  <div class="info-box">
-    <h3>Dashboard Overview</h3>
-    <ul>
-      <li><strong>Manage Students:</strong> View and update student records and information.</li>
-      <li><strong>Financial Records:</strong> Access and monitor school financial transactions.</li>
-      <li><strong>Results Checker:</strong> Review academic performance and transcripts.</li>
-      <li><strong>Announcements:</strong> Stay updated with the latest school news and notifications.</li>
-      <li><strong>Edit Announcements:</strong> Update announcements for the entire school (Principal only).</li>
-    </ul>
+  <div class="dashboard">
+    <a href="edit-announcement.html">📢 Edit Announcements</a>
+    <a href="student-editor.html">👩‍🎓 Manage Students</a>
+    <a href="approve-grades.html">✅ Approve Grades</a>
+    <a href="grades-approved.html">📄 View Approved Grades</a>
+    <a href="index.html">🏠 Return to Homepage</a>
   </div>
-</main>
-
-<footer>
-  &copy; 2025 Tyneceploh Educational Foundation
-</footer>
 
 </body>
 </html>
