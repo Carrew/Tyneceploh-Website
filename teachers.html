@@ -1,196 +1,207 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Teacher Portal - Tyneceploh</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teacher Portal - Grade Submission</title>
   <style>
     body {
       font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
       padding: 20px;
-      background-color: #f3f3f3;
     }
-    .hidden { display: none; }
-    .blue { color: blue; }
-    .red { color: red; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
-    table, th, td { border: 1px solid #ccc; }
-    th, td { padding: 8px; text-align: center; }
-    input[type="text"], input[type="number"], input[type="password"] {
-      padding: 5px;
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #eee;
+    }
+
+    .failing {
+      color: red;
+    }
+
+    .passing {
+      color: blue;
+    }
+
+    .btn {
+      padding: 10px 20px;
       margin: 5px;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
     }
-    button { padding: 6px 10px; margin: 5px; }
-    .logout-btn {
-      float: right;
-      background-color: crimson;
+
+    .btn-add, .btn-remove {
+      background-color: #007bff;
       color: white;
+    }
+
+    .btn-submit {
+      background-color: green;
+      color: white;
+    }
+
+    .btn-print {
+      background-color: orange;
+      color: white;
+      display: none;
+    }
+
+    .disabled {
+      pointer-events: none;
+      opacity: 0.6;
     }
   </style>
 </head>
+
 <body>
+  <div class="container">
+    <h2>Teacher Report Card Entry</h2>
 
-  <h2>Teacher Login</h2>
-  <div id="login-section">
-    <input type="text" id="teacherName" placeholder="Your Name" required />
-    <input type="text" id="teacherClass" placeholder="Class (e.g. Grade 5)" required />
-    <input type="password" id="teacherPass" placeholder="Password" required />
-    <button onclick="login()">Login</button>
-  </div>
+    <div>
+      <label for="teacherName">Teacher Name:</label>
+      <input type="text" id="teacherName" value="John" disabled>
+      <label for="teacherClass">Class:</label>
+      <input type="text" id="teacherClass" value="Grade 5" disabled>
+    </div>
 
-  <div id="dashboard" class="hidden">
-    <h2>Welcome <span id="displayName"></span> - <span id="displayClass"></span></h2>
-    <button class="logout-btn" onclick="logout()">Logout</button><br><br>
-
-    <button onclick="addStudent()">Add Student</button>
-    <button onclick="addSubject()">Add Subject</button>
-    <button onclick="saveDraft()">Save as Draft</button>
-    <button onclick="submitToPrincipal()">Submit to Principal</button>
+    <div>
+      <button class="btn btn-add" onclick="addStudent()">Add Student</button>
+      <button class="btn btn-add" onclick="addSubject()">Add Subject</button>
+    </div>
 
     <table id="gradeTable">
       <thead>
         <tr>
           <th>Student Name</th>
+          <th>Period</th>
+          <th>Subjects & Grades</th>
+          <th>Average</th>
+          <th>Rank</th>
+          <th>Remove</th>
         </tr>
       </thead>
-      <tbody></tbody>
+      <tbody id="tableBody"></tbody>
     </table>
+
+    <button class="btn btn-submit" onclick="submitGrades()">Submit Grades</button>
+    <button class="btn btn-print" id="printBtn" onclick="window.print()">Print</button>
   </div>
 
-<script>
-  let teacherInfo = {
-    name: "John",
-    class: "Grade 5",
-    pass: "pass"
-  };
+  <script>
+    let students = [];
 
-  let submitted = false;
+    function addStudent() {
+      const studentName = prompt("Enter student name:");
+      const period = prompt("Enter period (e.g., 1st, 2nd):");
+      if (!studentName || !period) return;
 
-  function login() {
-    const name = document.getElementById("teacherName").value.trim();
-    const klass = document.getElementById("teacherClass").value.trim();
-    const pass = document.getElementById("teacherPass").value;
+      const row = document.createElement('tr');
+      row.dataset.student = studentName;
+      row.dataset.period = period;
 
-    if (name === teacherInfo.name && klass === teacherInfo.class && pass === teacherInfo.pass) {
-      document.getElementById("login-section").classList.add("hidden");
-      document.getElementById("dashboard").classList.remove("hidden");
-      document.getElementById("displayName").innerText = name;
-      document.getElementById("displayClass").innerText = klass;
-    } else {
-      alert("Invalid login info");
-    }
-  }
+      const nameCell = document.createElement('td');
+      nameCell.textContent = studentName;
+      const periodCell = document.createElement('td');
+      periodCell.textContent = period;
+      const subjectCell = document.createElement('td');
+      subjectCell.classList.add('subjects');
+      const avgCell = document.createElement('td');
+      avgCell.className = 'average';
+      const rankCell = document.createElement('td');
+      rankCell.className = 'rank';
+      const removeCell = document.createElement('td');
+      const removeBtn = document.createElement('button');
+      removeBtn.textContent = 'Remove';
+      removeBtn.className = 'btn btn-remove';
+      removeBtn.onclick = () => row.remove();
+      removeCell.appendChild(removeBtn);
 
-  function logout() {
-    if (confirm("Are you sure you want to logout?")) {
-      location.reload();
-    }
-  }
-
-  function addStudent() {
-    if (submitted) return alert("Grades already submitted.");
-    let table = document.getElementById("gradeTable");
-    let headerRow = table.rows[0];
-    let tbody = table.querySelector("tbody");
-
-    let row = tbody.insertRow();
-    let nameCell = row.insertCell(0);
-    let nameInput = document.createElement("input");
-    nameInput.type = "text";
-    nameInput.placeholder = "Student Name";
-    nameCell.appendChild(nameInput);
-
-    for (let i = 1; i < headerRow.cells.length - 2; i++) {
-      let gradeCell = row.insertCell(i);
-      let gradeInput = document.createElement("input");
-      gradeInput.type = "number";
-      gradeInput.placeholder = "Score";
-      gradeInput.oninput = updateAverage;
-      gradeCell.appendChild(gradeInput);
+      row.append(nameCell, periodCell, subjectCell, avgCell, rankCell, removeCell);
+      document.getElementById('tableBody').appendChild(row);
     }
 
-    let avgCell = row.insertCell(-1);
-    avgCell.className = "average";
+    function addSubject() {
+      const subject = prompt("Enter subject:");
+      if (!subject) return;
 
-    let rankCell = row.insertCell(-1);
-    rankCell.className = "rank";
-  }
-
-  function addSubject() {
-    if (submitted) return alert("Grades already submitted.");
-    let subject = prompt("Enter Subject Name:");
-    if (!subject) return;
-
-    let table = document.getElementById("gradeTable");
-    let headerRow = table.rows[0];
-
-    let newCell = headerRow.insertCell(headerRow.cells.length - 2);
-    newCell.innerText = subject;
-
-    let rows = table.querySelector("tbody").rows;
-    for (let row of rows) {
-      let cell = row.insertCell(row.cells.length - 2);
-      let input = document.createElement("input");
-      input.type = "number";
-      input.placeholder = "Score";
-      input.oninput = updateAverage;
-      cell.appendChild(input);
+      const rows = document.querySelectorAll('#gradeTable tbody tr');
+      rows.forEach(row => {
+        const gradeInput = document.createElement('input');
+        gradeInput.type = 'number';
+        gradeInput.min = 0;
+        gradeInput.max = 100;
+        gradeInput.placeholder = subject;
+        gradeInput.oninput = () => calculateAverage(row);
+        row.querySelector('.subjects').appendChild(gradeInput);
+      });
     }
-  }
 
-  function updateAverage() {
-    let table = document.getElementById("gradeTable");
-    let tbody = table.querySelector("tbody");
-    let averages = [];
-
-    for (let row of tbody.rows) {
-      let total = 0;
+    function calculateAverage(row) {
+      const inputs = row.querySelectorAll('.subjects input');
+      let sum = 0;
       let count = 0;
-      for (let i = 1; i < row.cells.length - 2; i++) {
-        let val = parseFloat(row.cells[i].querySelector("input")?.value || 0);
+      inputs.forEach(input => {
+        const val = parseFloat(input.value);
         if (!isNaN(val)) {
-          total += val;
+          sum += val;
           count++;
         }
-      }
-
-      let avg = count ? (total / count).toFixed(2) : 0;
-      let avgCell = row.querySelector(".average");
-      avgCell.innerText = avg;
-
-      avgCell.className = avg < 70 ? "average red" : "average blue";
-      averages.push({ row, avg: parseFloat(avg) });
+      });
+      const avg = count ? sum / count : 0;
+      const avgCell = row.querySelector('.average');
+      avgCell.textContent = avg.toFixed(2);
+      avgCell.className = avg >= 70 ? 'average passing' : 'average failing';
+      updateRanking();
     }
 
-    averages.sort((a, b) => b.avg - a.avg);
-    averages.forEach((item, index) => {
-      item.row.querySelector(".rank").innerText = index + 1;
-    });
-  }
+    function updateRanking() {
+      const rows = Array.from(document.querySelectorAll('#gradeTable tbody tr'));
+      rows.sort((a, b) => {
+        const aAvg = parseFloat(a.querySelector('.average').textContent) || 0;
+        const bAvg = parseFloat(b.querySelector('.average').textContent) || 0;
+        return bAvg - aAvg;
+      });
+      rows.forEach((row, index) => {
+        row.querySelector('.rank').textContent = index + 1;
+      });
+    }
 
-  function saveDraft() {
-    if (submitted) return alert("Already submitted!");
-    alert("Grades saved as draft (not submitted yet).");
-  }
-
-  function submitToPrincipal() {
-    if (submitted) return;
-    if (!confirm("Submit grades to Principal? You won’t be able to edit after this.")) return;
-
-    submitted = true;
-
-    let inputs = document.querySelectorAll("input");
-    inputs.forEach(input => input.disabled = true);
-
-    alert("Grades submitted to Principal.");
-  }
-
-  // Add average and rank headers
-  window.onload = function () {
-    let headerRow = document.getElementById("gradeTable").rows[0];
-    headerRow.insertCell(-1).innerText = "Average";
-    headerRow.insertCell(-1).innerText = "Rank";
-  }
-</script>
+    function submitGrades() {
+      if (!confirm("Are you sure you want to submit grades? After submission, editing will be disabled.")) return;
+      document.querySelectorAll('input').forEach(input => input.disabled = true);
+      document.querySelectorAll('.btn-add, .btn-remove, .btn-submit').forEach(btn => btn.classList.add('disabled'));
+      document.getElementById('printBtn').style.display = 'inline-block';
+      alert("Grades submitted and locked. Awaiting principal approval.");
+    }
+  </script>
 </body>
+
 </html>
