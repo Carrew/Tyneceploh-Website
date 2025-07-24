@@ -2,54 +2,48 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Edit Announcements - Principal</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Edit Announcements - Principal Only</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background: #ffe6f0; }
-    textarea { width: 100%; height: 150px; font-size: 1.1rem; padding: 10px; }
-    button { margin-top: 10px; padding: 10px 20px; background: #8b5e3c; color: white; border: none; cursor: pointer; }
-    button:hover { background: #70482e; }
-    ul { background: #fff0f5; padding: 10px; border-radius: 8px; max-height: 300px; overflow-y: auto; }
-    li { margin-bottom: 10px; border-bottom: 1px solid #8b5e3c; padding-bottom: 6px; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #ffe6f0;
+      padding: 20px;
+      color: #4d0039;
+    }
+    textarea {
+      width: 100%;
+      height: 150px;
+      font-size: 1.1rem;
+      padding: 10px;
+      border-radius: 8px;
+      border: 2px solid #b35979;
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      background: #8b5e3c;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+    button:hover {
+      background: #70482e;
+    }
   </style>
 </head>
 <body>
   <h1>Edit Announcements</h1>
-  <textarea id="announcementText" placeholder="Write a new announcement here..."></textarea>
-  <br />
+  <textarea id="announcementText" placeholder="Write a new announcement here..."></textarea><br />
   <button onclick="addAnnouncement()">Add Announcement</button>
 
-  <h2>All Announcements</h2>
-  <ul id="announcementList"></ul>
-
   <script>
-    // Load announcements array or empty array
     function getAnnouncements() {
       return JSON.parse(localStorage.getItem('announcements')) || [];
     }
-
-    // Save announcements array to localStorage
     function saveAnnouncements(announcements) {
       localStorage.setItem('announcements', JSON.stringify(announcements));
     }
-
-    // Display all announcements in list
-    function displayAnnouncements() {
-      const list = document.getElementById('announcementList');
-      const announcements = getAnnouncements();
-      list.innerHTML = '';
-      if (announcements.length === 0) {
-        list.innerHTML = '<li>No announcements yet.</li>';
-        return;
-      }
-      announcements.forEach((text, idx) => {
-        const li = document.createElement('li');
-        li.textContent = text;
-        list.appendChild(li);
-      });
-    }
-
-    // Add new announcement
     function addAnnouncement() {
       const textarea = document.getElementById('announcementText');
       const text = textarea.value.trim();
@@ -58,16 +52,11 @@
         return;
       }
       const announcements = getAnnouncements();
-      announcements.unshift(text); // add newest first
+      announcements.unshift(text);
       saveAnnouncements(announcements);
       textarea.value = '';
       alert('Announcement added!');
-      displayAnnouncements();
     }
-
-    window.onload = () => {
-      displayAnnouncements();
-    };
   </script>
 </body>
 </html>
