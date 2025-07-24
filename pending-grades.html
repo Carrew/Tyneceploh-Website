@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pending Grades – Principal Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #fff0f5;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #8b5e3c;
+      text-align: center;
+    }
+
+    .grade-entry {
+      background: #ffe6f0;
+      border: 1px solid #8b5e3c;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+    }
+
+    .grade-entry p {
+      margin: 5px 0;
+    }
+
+    .actions {
+      margin-top: 10px;
+    }
+
+    .actions button {
+      margin-right: 10px;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .approve {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    .reject {
+      background-color: #f44336;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h1>Pending Grades for Approval</h1>
+  <div id="gradesContainer">Loading pending grades...</div>
+
+  <script>
+    const container = document.getElementById("gradesContainer");
+
+    function loadPendingGrades() {
+      const pending = JSON.parse(localStorage.getItem("pendingGrades")) || [];
+      if (pending.length === 0) {
+        container.innerHTML = "<p>No pending grades to review.</p>";
+        return;
+      }
+
+      container.innerHTML = "";
+      pending.forEach((entry, index) => {
+        const div = document.createElement("div");
+        div.className = "grade-entry";
+        div.innerHTML = `
+          <p><strong>Student:</strong> ${entry.student}</p>
+          <p><strong>Class:</strong> ${entry.class}</p>
+          <p><strong>Subject:</strong> ${entry.subject}</p>
+          <p><strong>Score:</strong> ${entry.score}</p>
+          <div class="actions">
+            <button class="approve" onclick="approveGrade(${index})">Approve</button>
+            <button class="reject" onclick="rejectGrade(${index})">Reject</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function approveGrade(index) {
+      let pending = JSON.parse(localStorage.getItem("pendingGrades")) || [];
+      const approvedGrade = pending.splice(index, 1)[0];
+
+      let results = JSON.parse(localStorage.getItem("finalGrades")) || [];
+      results.push(approvedGrade);
+      localStorage.setItem("finalGrades", JSON.stringify(results));
+      localStorage.setItem("pendingGrades", JSON.stringify(pending));
+      loadPendingGrades();
+    }
+
+    function rejectGrade(index) {
+      let pending = JSON.parse(localStorage.getItem("pendingGrades")) || [];
+      pending.splice(index, 1);
+      localStorage.setItem("pendingGrades", JSON.stringify(pending));
+      loadPendingGrades();
+    }
+
+    window.onload = loadPendingGrades;
+  </script>
+</body>
+</html>
