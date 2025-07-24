@@ -1,171 +1,332 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Teacher Dashboard</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f9f9f9;
-      padding: 20px;
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Teacher Portal - Tyneceploh Educational Foundation</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #fff0f6;
+    color: #4d0039;
+    margin: 0; padding: 20px;
+  }
+  header {
+    display: flex; justify-content: space-between; align-items: center;
+    background-color: #b35979; color: white; padding: 15px 20px;
+    border-radius: 8px;
+  }
+  header h1 {
+    margin: 0; font-size: 1.5rem;
+  }
+  button.logout {
+    background: #7a1e48; border: none; color: white;
+    padding: 8px 14px; border-radius: 6px; cursor: pointer;
+    font-weight: bold;
+  }
+  button.logout:hover {
+    background: #9c255c;
+  }
+  #help {
+    margin: 15px 0;
+    font-size: 0.9rem;
+    background: #ffe6f0;
+    border-left: 5px solid #b35979;
+    padding: 10px 15px;
+    border-radius: 5px;
+  }
+  table {
+    width: 100%; border-collapse: collapse; margin-bottom: 10px;
+  }
+  th, td {
+    padding: 10px; border: 2px solid #b35979; text-align: left;
+  }
+  th {
+    background-color: #b35979;
+    color: white;
+  }
+  input.subject, input.grade {
+    width: 100%; padding: 6px; box-sizing: border-box;
+    border: 1px solid #b35979;
+    border-radius: 4px;
+  }
+  input.grade {
+    text-align: center;
+  }
+  button.action-btn {
+    background: #b35979;
+    border: none;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  button.action-btn:hover {
+    background: #9c255c;
+  }
+  .summary {
+    margin-top: 15px;
+    font-weight: bold;
+  }
+  .message {
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 6px;
+  }
+  .message.success {
+    background-color: #d4edda;
+    color: #155724;
+  }
+  .message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+  @media (max-width: 600px) {
+    header {
+      flex-direction: column;
+      gap: 10px;
     }
-    .header {
-      background-color: brown;
-      color: white;
-      padding: 15px;
-      text-align: center;
-      border-radius: 10px;
-    }
-    .info {
-      margin-top: 20px;
-      font-weight: bold;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 15px;
-    }
-    table, th, td {
-      border: 1px solid #ccc;
-    }
-    th, td {
-      padding: 10px;
-      text-align: center;
-    }
-    input[type="text"], input[type="number"] {
-      width: 90%;
-      padding: 5px;
-    }
-    .controls button {
-      margin: 10px 5px;
-      padding: 10px;
-      background-color: brown;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .controls button:hover {
-      background-color: darkred;
-    }
-    .red { background-color: #ffcccc; }
-    .blue { background-color: #ccf2ff; }
-  </style>
+  }
+</style>
 </head>
 <body>
-  <div class="header">
-    <h2>Teacher Portal</h2>
-  </div>
 
-  <div class="info">
-    Logged in as: <span id="teacherName"></span> | Class: <span id="teacherClass"></span>
-  </div>
+<header>
+  <h1 id="welcomeMsg">Welcome, Teacher</h1>
+  <button class="logout" onclick="confirmLogout()">Logout</button>
+</header>
 
-  <div class="controls">
-    <button onclick="addStudentRow()">Add Student</button>
-    <button onclick="removeStudentRow()">Remove Student</button>
-    <button onclick="submitToPrincipal()">Submit Grades</button>
-  </div>
+<div id="help">
+  <strong>Instructions:</strong>  
+  Use the table below to enter your subjects and grades (60-100).  
+  Click "Add Subject" to add more subjects, or "Remove" to delete a row.  
+  Grades below 70 will show in red, 70 and above in blue.  
+  Click "Save Draft" to save your work locally.  
+  When done, click "Submit Grades" to send for principal approval.
+</div>
 
-  <table id="gradeTable">
-    <thead>
-      <tr>
-        <th>Student Name</th>
-        <th>Subject 1</th>
-        <th>Subject 2</th>
-        <th>Subject 3</th>
-        <th>Average</th>
-        <th>Rank</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+<table id="gradesTable" aria-label="Grades Entry Table">
+  <thead>
+    <tr>
+      <th>Subject</th>
+      <th>Grade (60-100)</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody id="gradesBody">
+    <tr>
+      <td><input type="text" class="subject" placeholder="Subject name" required></td>
+      <td><input type="number" class="grade" min="60" max="100" placeholder="Grade" required oninput="updateColorsAndSummary()"></td>
+      <td><button type="button" class="action-btn" onclick="removeRow(this)">Remove</button></td>
+    </tr>
+  </tbody>
+</table>
 
-  <script>
-    const teacher = JSON.parse(localStorage.getItem("teacherInfo"));
+<button type="button" class="action-btn" onclick="addSubjectRow()">Add Subject</button>
+<button type="button" class="action-btn" onclick="saveDraft()">Save Draft</button>
+<button type="button" class="action-btn" onclick="submitGrades()">Submit Grades</button>
 
-    if (!teacher) {
-      window.location.href = "teacher-login.html";
-    } else {
-      document.getElementById("teacherName").textContent = teacher.name;
-      document.getElementById("teacherClass").textContent = teacher.class;
+<div class="summary" id="gradeSummary">
+  Average Grade: 0 | Subjects: 1 | Highest Grade: N/A | Lowest Grade: N/A
+</div>
+
+<div id="messageBox"></div>
+
+<script>
+  // Load teacher info from localStorage or redirect to login if missing
+  let teacherName = localStorage.getItem('teacherName');
+  let teacherClass = localStorage.getItem('teacherClass');
+  if (!teacherName || !teacherClass) {
+    alert("You are not logged in. Redirecting to login page.");
+    window.location.href = 'teacher-login.html';
+  } else {
+    document.getElementById('welcomeMsg').textContent = `Welcome, ${teacherName} - Class ${teacherClass}`;
+  }
+
+  // Add subject row
+  function addSubjectRow() {
+    const tbody = document.getElementById("gradesBody");
+    const newRow = document.createElement("tr");
+    newRow.innerHTML = `
+      <td><input type="text" class="subject" placeholder="Subject name" required></td>
+      <td><input type="number" class="grade" min="60" max="100" placeholder="Grade" required oninput="updateColorsAndSummary()"></td>
+      <td><button type="button" class="action-btn" onclick="removeRow(this)">Remove</button></td>
+    `;
+    tbody.appendChild(newRow);
+    updateColorsAndSummary();
+  }
+
+  // Remove subject row
+  function removeRow(button) {
+    const tbody = document.getElementById("gradesBody");
+    if (tbody.rows.length === 1) {
+      alert("At least one subject row is required.");
+      return;
     }
+    const row = button.parentElement.parentElement;
+    row.remove();
+    updateColorsAndSummary();
+  }
 
-    let studentData = [];
+  // Update color coding and summary info
+  function updateColorsAndSummary() {
+    const grades = document.querySelectorAll('.grade');
+    let sum = 0, count = 0;
+    let highest = -Infinity;
+    let lowest = Infinity;
 
-    function addStudentRow() {
-      const table = document.querySelector("#gradeTable tbody");
-      const row = table.insertRow();
-      const rowIndex = table.rows.length;
+    grades.forEach(input => {
+      const val = parseFloat(input.value);
+      if (!isNaN(val)) {
+        sum += val;
+        count++;
+        if (val > highest) highest = val;
+        if (val < lowest) lowest = val;
 
-      row.innerHTML = `
-        <td><input type="text" placeholder="Student ${rowIndex}" /></td>
-        <td><input type="number" min="60" max="100" oninput="updateAverage(this)" /></td>
-        <td><input type="number" min="60" max="100" oninput="updateAverage(this)" /></td>
-        <td><input type="number" min="60" max="100" oninput="updateAverage(this)" /></td>
-        <td class="average">-</td>
-        <td class="rank">-</td>
-      `;
-    }
-
-    function removeStudentRow() {
-      const table = document.querySelector("#gradeTable tbody");
-      if (table.rows.length > 0) {
-        table.deleteRow(-1);
-      }
-    }
-
-    function updateAverage(input) {
-      const row = input.parentElement.parentElement;
-      const inputs = row.querySelectorAll("input[type='number']");
-      let total = 0;
-      let count = 0;
-
-      inputs.forEach(inp => {
-        const val = parseInt(inp.value);
-        if (!isNaN(val)) {
-          total += val;
-          count++;
+        if (val < 70) {
+          input.style.color = 'red';
+          input.style.fontWeight = 'bold';
+        } else {
+          input.style.color = 'blue';
+          input.style.fontWeight = 'bold';
         }
-      });
-
-      const avgCell = row.querySelector(".average");
-      const rankCell = row.querySelector(".rank");
-      if (count === 3) {
-        const avg = Math.round(total / 3);
-        avgCell.textContent = avg;
-        avgCell.className = avg < 70 ? "average red" : "average blue";
-        rankCell.textContent = "-";
       } else {
-        avgCell.textContent = "-";
-        avgCell.className = "average";
-        rankCell.textContent = "-";
+        input.style.color = 'black';
+        input.style.fontWeight = 'normal';
       }
+    });
 
-      calculateRankings();
+    const average = count > 0 ? (sum / count).toFixed(2) : 0;
+    const subjectsCount = document.querySelectorAll('.subject').length;
+    document.getElementById('gradeSummary').textContent =
+      `Average Grade: ${average} | Subjects: ${subjectsCount} | Highest Grade: ${highest === -Infinity ? 'N/A' : highest} | Lowest Grade: ${lowest === Infinity ? 'N/A' : lowest}`;
+  }
+
+  // Save draft to localStorage
+  function saveDraft() {
+    const subjects = [];
+    const grades = [];
+    let valid = true;
+    const subjectInputs = document.querySelectorAll('.subject');
+    const gradeInputs = document.querySelectorAll('.grade');
+
+    for (let i = 0; i < subjectInputs.length; i++) {
+      const subj = subjectInputs[i].value.trim();
+      const grd = parseFloat(gradeInputs[i].value);
+      if (!subj) {
+        alert(`Subject name at row ${i + 1} cannot be empty.`);
+        valid = false;
+        break;
+      }
+      if (isNaN(grd) || grd < 60 || grd > 100) {
+        alert(`Grade at row ${i + 1} must be between 60 and 100.`);
+        valid = false;
+        break;
+      }
+      subjects.push(subj);
+      grades.push(grd);
     }
+    if (!valid) return;
 
-    function calculateRankings() {
-      const rows = [...document.querySelectorAll("#gradeTable tbody tr")];
-      const scores = rows.map(row => {
-        const name = row.cells[0].querySelector("input").value.trim();
-        const avg = parseInt(row.querySelector(".average").textContent);
-        return { row, avg: isNaN(avg) ? 0 : avg };
-      });
+    const draft = { subjects, grades };
+    localStorage.setItem(`${teacherName}_${teacherClass}_draft`, JSON.stringify(draft));
+    showMessage("Draft saved successfully.", "success");
+  }
 
-      scores.sort((a, b) => b.avg - a.avg);
+  // Load draft from localStorage
+  function loadDraft() {
+    const draftStr = localStorage.getItem(`${teacherName}_${teacherClass}_draft`);
+    if (!draftStr) return;
+    const draft = JSON.parse(draftStr);
 
-      scores.forEach((obj, index) => {
-        obj.row.querySelector(".rank").textContent = obj.avg === 0 ? "-" : index + 1;
-      });
+    const tbody = document.getElementById('gradesBody');
+    tbody.innerHTML = ''; // clear all
+
+    for (let i = 0; i < draft.subjects.length; i++) {
+      const newRow = document.createElement("tr");
+      newRow.innerHTML = `
+        <td><input type="text" class="subject" value="${draft.subjects[i]}" required></td>
+        <td><input type="number" class="grade" min="60" max="100" value="${draft.grades[i]}" required oninput="updateColorsAndSummary()"></td>
+        <td><button type="button" class="action-btn" onclick="removeRow(this)">Remove</button></td>
+      `;
+      tbody.appendChild(newRow);
     }
+    updateColorsAndSummary();
+  }
 
-    function submitToPrincipal() {
-      alert("Grades submitted to principal for review.");
-      localStorage.removeItem("teacherInfo");
-      window.location.href = "teacher-login.html";
+  // Submit grades to principal (simulated here)
+  function submitGrades() {
+    const subjectInputs = document.querySelectorAll('.subject');
+    const gradeInputs = document.querySelectorAll('.grade');
+    let valid = true;
+    const gradesData = [];
+
+    for (let i = 0; i < subjectInputs.length; i++) {
+      const subj = subjectInputs[i].value.trim();
+      const grd = parseFloat(gradeInputs[i].value);
+      if (!subj) {
+        alert(`Subject name at row ${i + 1} cannot be empty.`);
+        valid = false;
+        break;
+      }
+      if (isNaN(grd) || grd < 60 || grd > 100) {
+        alert(`Grade at row ${i + 1} must be between 60 and 100.`);
+        valid = false;
+        break;
+      }
+      gradesData.push({ subject: subj, grade: grd });
     }
-  </script>
+    if (!valid) return;
+
+    // Simulate submission: remove draft and show message
+    localStorage.removeItem(`${teacherName}_${teacherClass}_draft`);
+    showMessage("Grades submitted successfully for principal approval.", "success");
+
+    // Disable editing after submission
+    disableEditing();
+  }
+
+  // Disable editing after submission
+  function disableEditing() {
+    const subjectInputs = document.querySelectorAll('.subject');
+    const gradeInputs = document.querySelectorAll('.grade');
+    const removeButtons = document.querySelectorAll('#gradesBody button');
+
+    subjectInputs.forEach(input => input.disabled = true);
+    gradeInputs.forEach(input => input.disabled = true);
+    removeButtons.forEach(btn => btn.disabled = true);
+
+    document.querySelector('button[action="addSubject"]').disabled = true;
+    document.querySelector('button[action="saveDraft"]').disabled = true;
+    document.querySelector('button[action="submitGrades"]').disabled = true;
+  }
+
+  // Show message (success or error)
+  function showMessage(msg, type) {
+    const box = document.getElementById('messageBox');
+    box.textContent = msg;
+    box.className = `message ${type}`;
+    setTimeout(() => {
+      box.textContent = '';
+      box.className = '';
+    }, 4000);
+  }
+
+  // Confirm logout function
+  function confirmLogout() {
+    if (confirm("Are you sure you want to logout?")) {
+      localStorage.removeItem('teacherName');
+      localStorage.removeItem('teacherClass');
+      window.location.href = 'teacher-login.html';
+    }
+  }
+
+  // Initialize page on load
+  window.onload = function() {
+    loadDraft();
+  }
+</script>
+
 </body>
 </html>
