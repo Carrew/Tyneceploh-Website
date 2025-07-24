@@ -5,78 +5,53 @@
   <title>Final Grades - Tyneceploh Educational Foundation</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #fff0f5;
-      padding: 20px;
-    }
-    h1 {
-      color: #8b5e3c;
-      text-align: center;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #ffe6f0;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-    th, td {
-      padding: 12px;
-      border: 1px solid #8b5e3c;
-      text-align: left;
-      color: #8b5e3c;
-    }
-    th {
-      background-color: #fddde6;
-    }
-    .no-data {
-      text-align: center;
-      color: #8b5e3c;
-      padding: 20px;
-    }
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
+    table, th, td { border: 1px solid black; border-collapse: collapse; padding: 8px; }
+    th { background: #ccc; }
   </style>
 </head>
 <body>
-  <h1>Approved Final Grades</h1>
-  <table id="finalGradeTable">
+
+  <h1>Final Approved Grades</h1>
+  <table>
     <thead>
       <tr>
-        <th>Student Name</th>
-        <th>Class</th>
+        <th>Student</th>
         <th>Subject</th>
         <th>Grade</th>
+        <th>Status</th>
         <th>Teacher</th>
       </tr>
     </thead>
     <tbody id="finalGradeBody">
-      <tr><td colspan="5" class="no-data">Loading grades...</td></tr>
+      <!-- Approved grades will be loaded here -->
     </tbody>
   </table>
 
   <script>
     window.onload = () => {
-      const tableBody = document.getElementById('finalGradeBody');
       const approvedGrades = JSON.parse(localStorage.getItem('approvedGrades')) || [];
+      const tbody = document.getElementById('finalGradeBody');
+      tbody.innerHTML = '';
 
       if (approvedGrades.length === 0) {
-        tableBody.innerHTML = '<tr><td colspan="5" class="no-data">No approved grades yet.</td></tr>';
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No final grades available.</td></tr>`;
         return;
       }
 
-      tableBody.innerHTML = '';
       approvedGrades.forEach(grade => {
         const row = document.createElement('tr');
         row.innerHTML = `
-          <td>${grade.name}</td>
-          <td>${grade.class}</td>
+          <td>${grade.student}</td>
           <td>${grade.subject}</td>
           <td>${grade.grade}</td>
-          <td>${grade.teacher}</td>
+          <td>${grade.status}</td>
+          <td>${grade.teacher || ''}</td>
         `;
-        tableBody.appendChild(row);
+        tbody.appendChild(row);
       });
     };
   </script>
+
 </body>
 </html>
