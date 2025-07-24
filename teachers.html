@@ -1,154 +1,166 @@
 <!DOCTYPE html><html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Teachers Portal - Tyneceploh Educational Foundation</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Teacher Portal - Tyneceploh School</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #fff0f5;
+      background-color: #fff8f8;
+      color: #4b2e2e;
       margin: 0;
       padding: 0;
     }
     header {
-      background-color: #8b5e3c;
+      background-color: #e91e63;
       color: white;
+      padding: 1rem;
       text-align: center;
-      padding: 1rem;
     }
-    main {
+    nav {
+      background-color: #f8bbd0;
       padding: 1rem;
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
     }
-    form {
-      background-color: #ffe6f0;
-      padding: 1rem;
+    nav a {
+      text-decoration: none;
+      color: #4b2e2e;
+      background-color: #ffe4ec;
+      padding: 0.5rem 1rem;
       border-radius: 8px;
-      max-width: 500px;
-      margin: 0 auto;
-    }
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
       font-weight: bold;
     }
-    input, select {
+    nav a:hover {
+      background-color: #f48fb1;
+    }
+    main {
+      padding: 2rem;
+    }
+    section {
+      margin-bottom: 2rem;
+    }
+    h2 {
+      color: #880e4f;
+    }
+    .card {
+      background: #fff;
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin-top: 1rem;
+    }
+    label, input, select, textarea {
+      display: block;
+      margin: 0.5rem 0;
       width: 100%;
       padding: 0.5rem;
-      margin-bottom: 1rem;
+      border-radius: 6px;
       border: 1px solid #ccc;
-      border-radius: 4px;
     }
     button {
-      background-color: #8b5e3c;
+      padding: 0.7rem 1.2rem;
+      background-color: #e91e63;
       color: white;
       border: none;
-      padding: 0.7rem 1rem;
-      border-radius: 4px;
+      border-radius: 6px;
       cursor: pointer;
+      margin-top: 1rem;
     }
     button:hover {
-      background-color: #70482e;
-    }
-    .grades-list {
-      max-width: 600px;
-      margin: 2rem auto;
-      background-color: #fff5fa;
-      padding: 1rem;
-      border-radius: 8px;
-    }
-    .grades-list h2 {
-      text-align: center;
-      margin-bottom: 1rem;
-    }
-    .grades-list ul {
-      list-style-type: none;
-      padding: 0;
-    }
-    .grades-list li {
-      background-color: #f9d9e6;
-      margin-bottom: 0.5rem;
-      padding: 0.5rem;
-      border-radius: 4px;
+      background-color: #c2185b;
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>Teachers Portal</h1>
-    <p>Submit Student Grades</p>
-  </header>  <main>
-    <form onsubmit="submitGrades(event)">
+    <h1>Teacher Portal</h1>
+    <p>Tyneceploh Educational Foundation</p>
+  </header>  <nav>
+    <a href="#grades">Enter Grades</a>
+    <a href="#subjects">Assign Subjects</a>
+    <a href="#upload">Upload Assignment</a>
+    <a href="#reports">View Student Reports</a>
+    <a href="#logout">Logout</a>
+  </nav>  <main>
+    <section id="grades">
+      <h2>Enter Student Grades</h2>
+      <div class="card">
+        <form>
+          <label for="studentName">Student Name</label>
+          <input type="text" id="studentName" required /><label for="grade">Grade/Class</label>
+      <select id="grade">
+        <option>1st Grade</option>
+        <option>2nd Grade</option>
+        <option>3rd Grade</option>
+        <option>...up to 9th Grade</option>
+      </select>
+
+      <label for="subject">Subject</label>
+      <input type="text" id="subject" required />
+
+      <label for="score">Score</label>
+      <input type="number" id="score" required />
+
+      <button type="submit">Submit Grade</button>
+    </form>
+  </div>
+</section>
+
+<section id="subjects">
+  <h2>Assign Subjects</h2>
+  <div class="card">
+    <form>
       <label for="teacherName">Teacher Name</label>
-      <input type="text" id="teacherName" required><label for="class">Class</label>
-  <select id="class" required>
-    <option value="">Select Class</option>
-    <option>Grade 1</option>
-    <option>Grade 2</option>
-    <option>Grade 3</option>
-    <option>Grade 4</option>
-    <option>Grade 5</option>
-    <option>Grade 6</option>
-    <option>Grade 7</option>
-    <option>Grade 8</option>
-    <option>Grade 9</option>
-  </select>
+      <input type="text" id="teacherName" required />
 
-  <label for="studentName">Student Name</label>
-  <input type="text" id="studentName" required>
+      <label for="assignedGrade">Grade</label>
+      <select id="assignedGrade">
+        <option>1st Grade</option>
+        <option>2nd Grade</option>
+        <option>3rd Grade</option>
+        <option>...up to 9th Grade</option>
+      </select>
 
-  <label for="subject">Subject</label>
-  <input type="text" id="subject" required>
+      <label for="assignedSubject">Subject</label>
+      <input type="text" id="assignedSubject" required />
 
-  <label for="grade">Grade</label>
-  <input type="text" id="grade" required>
+      <button type="submit">Assign Subject</button>
+    </form>
+  </div>
+</section>
 
-  <button type="submit">Submit Grade</button>
-</form>
+<section id="upload">
+  <h2>Upload Assignment or Notes</h2>
+  <div class="card">
+    <form>
+      <label for="fileTitle">Title</label>
+      <input type="text" id="fileTitle" required />
 
-<div class="grades-list" id="gradesList" style="display:none">
-  <h2>Submitted Grades</h2>
-  <ul id="gradesOutput"></ul>
-</div>
+      <label for="fileUpload">Select File</label>
+      <input type="file" id="fileUpload" required />
 
-  </main>  <script>
-    function submitGrades(event) {
-      event.preventDefault();
+      <button type="submit">Upload</button>
+    </form>
+  </div>
+</section>
 
-      const teacher = document.getElementById('teacherName').value;
-      const student = document.getElementById('studentName').value;
-      const className = document.getElementById('class').value;
-      const subject = document.getElementById('subject').value;
-      const grade = document.getElementById('grade').value;
+<section id="reports">
+  <h2>View Student Reports</h2>
+  <div class="card">
+    <p>Feature coming soon – student progress reports and grade history will be viewable here.</p>
+  </div>
+</section>
 
-      const gradeEntry = `${student} | ${className} | ${subject} | Grade: ${grade} (by ${teacher})`;
+<section id="logout">
+  <h2>Logout</h2>
+  <div class="card">
+    <p>You have been logged out. <a href="teacher-login.html">Login again</a></p>
+  </div>
+</section>
 
-      let grades = JSON.parse(localStorage.getItem('submittedGrades')) || [];
-      grades.push(gradeEntry);
-      localStorage.setItem('submittedGrades', JSON.stringify(grades));
-
-      alert("Grade submitted! Sent to principal for approval.");
-      document.querySelector("form").reset();
-      showGrades();
-    }
-
-    function showGrades() {
-      const gradesList = document.getElementById('gradesList');
-      const gradesOutput = document.getElementById('gradesOutput');
-      const grades = JSON.parse(localStorage.getItem('submittedGrades')) || [];
-
-      if (grades.length > 0) {
-        gradesList.style.display = 'block';
-        gradesOutput.innerHTML = '';
-        grades.forEach(g => {
-          const li = document.createElement('li');
-          li.textContent = g;
-          gradesOutput.appendChild(li);
-        });
-      } else {
-        gradesList.style.display = 'none';
-      }
-    }
-
-    window.onload = showGrades;
-  </script></body>
-  </html>
+  </main>
+</body>
+</html>
