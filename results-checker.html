@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Results Checker - Tyneceploh Educational Foundation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f4f4f4;
+    }
+    .container {
+      max-width: 450px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #4d0039;
+      margin-bottom: 20px;
+    }
+    label, input, button {
+      display: block;
+      width: 100%;
+      margin-bottom: 15px;
+      font-size: 1rem;
+    }
+    input {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      background-color: #b35979;
+      color: white;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #7a2e4c;
+    }
+    #resultArea {
+      background: #ffe6f0;
+      border-radius: 8px;
+      padding: 15px;
+      color: #4d0039;
+      font-weight: 600;
+    }
+    .error {
+      color: red;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Results Checker</h2>
+  <label for="pinInput">Enter your PIN:</label>
+  <input type="text" id="pinInput" placeholder="e.g., 1234" maxlength="10" />
+  <button onclick="checkResult()">Check Result</button>
+  <div id="message" class="error"></div>
+  <div id="resultArea"></div>
+</div>
+
+<script>
+  // Sample data for demo - you will replace this with backend later
+  // Structure: {pin: string, name: string, grades: [{subject, grade}]}
+  const mockResults = [
+    {
+      pin: "1234",
+      name: "Alice Johnson",
+      grades: [
+        { subject: "Math", grade: 85 },
+        { subject: "English", grade: 78 },
+        { subject: "Science", grade: 90 }
+      ]
+    },
+    {
+      pin: "5678",
+      name: "Bob Smith",
+      grades: [
+        { subject: "Math", grade: 65 },
+        { subject: "English", grade: 70 },
+        { subject: "Science", grade: 55 }
+      ]
+    }
+  ];
+
+  // Save mock data to localStorage if not there (simulate backend data)
+  if (!localStorage.getItem('resultsData')) {
+    localStorage.setItem('resultsData', JSON.stringify(mockResults));
+  }
+
+  function checkResult() {
+    const pin = document.getElementById('pinInput').value.trim();
+    const messageEl = document.getElementById('message');
+    const resultArea = document.getElementById('resultArea');
+    messageEl.textContent = "";
+    resultArea.innerHTML = "";
+
+    if (pin.length === 0) {
+      messageEl.textContent = "Please enter your PIN.";
+      return;
+    }
+
+    const resultsData = JSON.parse(localStorage.getItem('resultsData')) || [];
+    const studentResult = resultsData.find(r => r.pin === pin);
+
+    if (!studentResult) {
+      messageEl.textContent = "Invalid PIN or result not found.";
+      return;
+    }
+
+    // Display result
+    let html = `<h3>${studentResult.name}</h3><table style="width:100%; border-collapse: collapse;">`;
+    html += `<tr style="background:#b35979; color:#fff;"><th style="padding:8px; border:1px solid #ccc;">Subject</th><th style="padding:8px; border:1px solid #ccc;">Grade</th></tr>`;
+
+    studentResult.grades.forEach(item => {
+      const color = item.grade >= 70 ? "#d0f0fd" : "#f8d7da"; // pass/fail color
+      html += `<tr style="background:${color};"><td style="padding:8px; border:1px solid #ccc;">${item.subject}</td><td style="padding:8px; border:1px solid #ccc; text-align:center;">${item.grade}</td></tr>`;
+    });
+    html += "</table>";
+
+    resultArea.innerHTML = html;
+  }
+</script>
+
+</body>
+</html>
