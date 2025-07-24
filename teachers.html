@@ -2,119 +2,56 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Teacher Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    body { font-family: Arial, sans-serif; background: #f4f4f4; padding: 20px; }
-    .hidden { display: none; }
-    .error { color: red; }
-    table, th, td { border: 1px solid black; border-collapse: collapse; padding: 8px; }
-    th { background: #eee; }
-    .pass { background-color: lightblue; }
-    .fail { background-color: lightcoral; }
-    .button { padding: 5px 10px; margin: 5px; }
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f0f0f0; }
+    h2 { color: #333; }
+    .info { background: #fff; padding: 15px; margin: 10px 0; border-radius: 6px; }
+    .logout-btn {
+      padding: 8px 16px;
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .logout-btn:hover {
+      background-color: #c0392b;
+    }
   </style>
 </head>
 <body>
 
-  <div id="main-section">
-    <h2 id="welcome"></h2>
-    <div>
-      <button onclick="addStudent()">Add Student</button>
-      <button onclick="submitGrades()">Submit to Principal</button>
-    </div>
-    <table id="gradeTable">
-      <thead>
-        <tr>
-          <th>Student Name</th>
-          <th>Subject</th>
-          <th>Grade</th>
-          <th>Status</th>
-          <th>Remove</th>
-        </tr>
-      </thead>
-      <tbody id="gradeBody"></tbody>
-    </table>
-    <br>
-    <button id="printBtn" class="hidden" onclick="window.print()">Print</button>
-    <br><br>
-    <button onclick="logout()">Logout</button>
+  <h2>Welcome, <span id="teacherNameDisplay"></span></h2>
+  <div class="info">
+    <strong>Class:</strong> <span id="teacherClassDisplay"></span><br>
+    <strong>Status:</strong> Logged in
   </div>
 
+  <button class="logout-btn" onclick="logout()">Log Out</button>
+
   <script>
-    // Extract username and class from URL parameters
-    function getUrlParams() {
-      const params = new URLSearchParams(window.location.search);
-      return {
-        username: params.get('username') || '',
-        className: params.get('class') || ''
-      };
+    // Function to get URL query parameters
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
     }
 
-    let submitted = false;
+    // Get name and class from URL and show them
+    const teacherName = getQueryParam("username");
+    const teacherClass = getQueryParam("class");
 
-    window.onload = () => {
-      const { username, className } = getUrlParams();
-      
-      if (!username || !className) {
-        alert("Please login first.");
-        window.location.href = "teacher-login.html"; // redirect to login page
-        return;
-      }
-      
-      document.getElementById('welcome').textContent = `Welcome, ${username} (${className})`;
-      
-      window.currentTeacher = { username, className };
-    };
+    if (teacherName && teacherClass) {
+      document.getElementById("teacherNameDisplay").textContent = teacherName;
+      document.getElementById("teacherClassDisplay").textContent = teacherClass;
+    } else {
+      alert("No login info found. Redirecting to login.");
+      window.location.href = "teacher-login.html";
+    }
 
     function logout() {
-      window.location.href = "teacher-login.html"; // Redirect to login page on logout
-    }
-
-    function addStudent() {
-      if (submitted) return;
-      const tbody = document.getElementById("gradeBody");
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td contenteditable="true"></td>
-        <td contenteditable="true"></td>
-        <td contenteditable="true" oninput="updateStatus(this)"></td>
-        <td></td>
-        <td><button onclick="removeRow(this)">Remove</button></td>
-      `;
-      tbody.appendChild(row);
-    }
-
-    function removeRow(btn) {
-      if (submitted) return;
-      btn.closest("tr").remove();
-    }
-
-    function updateStatus(td) {
-      const grade = parseInt(td.textContent);
-      const statusCell = td.nextElementSibling;
-      const row = td.parentElement;
-      if (!isNaN(grade)) {
-        if (grade >= 70) {
-          statusCell.textContent = "Pass";
-          row.className = "pass";
-        } else {
-          statusCell.textContent = "Fail";
-          row.className = "fail";
-        }
-      } else {
-        statusCell.textContent = "";
-        row.className = "";
-      }
-    }
-
-    function submitGrades() {
-      submitted = true;
-      const cells = document.querySelectorAll("td[contenteditable='true']");
-      cells.forEach(cell => cell.setAttribute("contenteditable", "false"));
-      document.getElementById("printBtn").classList.remove("hidden");
-      alert("Grades submitted to principal for approval.");
-      // Here you can add your backend submission code later
+      window.location.href = "teacher-login.html";
     }
   </script>
 </body>
