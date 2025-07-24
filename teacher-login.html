@@ -3,88 +3,135 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Teacher Login - Tyneceploh Educational Foundation</title>
+  <title>Teacher Portal</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #ffe6f0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
-    .login-container {
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(179, 89, 121, 0.4);
-      width: 320px;
-    }
-    h2 {
-      text-align: center;
-      color: #b35979;
-      margin-bottom: 20px;
-    }
-    input {
-      width: 100%;
-      padding: 10px;
-      margin: 8px 0 15px 0;
-      border: 2px solid #b35979;
-      border-radius: 8px;
-      font-size: 1rem;
-    }
-    button {
-      background-color: #b35979;
-      color: white;
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 8px;
-      font-size: 1.1rem;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    button:hover {
-      background-color: #802d48;
-    }
+    body { font-family: Arial, sans-serif; background: #f4f4f4; padding: 20px; }
+    .hidden { display: none; }
+    .error { color: red; }
+    table, th, td { border: 1px solid black; border-collapse: collapse; padding: 8px; }
+    th { background: #eee; }
+    .pass { background-color: lightblue; }
+    .fail { background-color: lightcoral; }
+    .button { padding: 5px 10px; margin: 5px; }
+    input:disabled { background: #ddd; }
   </style>
 </head>
 <body>
-  <div class="login-container">
+
+  <!-- Login Section -->
+  <div id="login-section">
     <h2>Teacher Login</h2>
-    <input type="text" id="name" placeholder="Name" required />
-    <input type="text" id="class" placeholder="Class" required />
-    <input type="password" id="password" placeholder="Password" required />
-    <button onclick="handleLogin()">Login</button>
+    <input type="text" id="teacherName" placeholder="Username" /><br /><br />
+    <input type="text" id="teacherClass" placeholder="Class" /><br /><br />
+    <input type="password" id="teacherPassword" placeholder="Password" /><br /><br />
+    <button onclick="login()">Log In</button>
+    <p class="error" id="loginError"></p>
   </div>
 
-  <script>
-    const teacherAccounts = [
-      { name: "Mr. Doe", class: "Grade 5A", password: "pass123" },
-      { name: "Ms. Grace", class: "Grade 6", password: "grace123" },
-      { name: "Mr. Mark", class: "Grade 9", password: "mark123" }
-    ];
+  <!-- Main Section (hidden by default) -->
+  <div id="main-section" class="hidden">
+    <h2 id="welcome"></h2>
+    <div>
+      <button onclick="addStudent()">Add Student</button>
+      <button onclick="submitGrades()">Submit to Principal</button>
+    </div>
+    <table id="gradeTable">
+      <thead>
+        <tr>
+          <th>Student Name</th>
+          <th>Subject</th>
+          <th>Grade</th>
+          <th>Status</th>
+          <th>Remove</th>
+        </tr>
+      </thead>
+      <tbody id="gradeBody"></tbody>
+    </table>
+    <br />
+    <button id="printBtn" class="hidden" onclick="window.print()">Print</button>
+    <br /><br />
+    <button onclick="logout()">Logout</button>
+  </div>
 
-    function handleLogin() {
-      const name = document.getElementById("name").value.trim();
-      const className = document.getElementById("class").value.trim();
-      const password = document.getElementById("password").value;
+<script>
+  // Teacher credentials - username, class, password
+  const credentials = [
+    { username: "john", class: "Grade 5", password: "pass" },
+    { username: "mrdoe", class: "Grade 5A", password: "pass123" }
+  ];
 
-      const found = teacherAccounts.find(account =>
-        account.name === name &&
-        account.class === className &&
-        account.password === password
-      );
+  let currentTeacher = null;
+  let submitted = false;
 
-      if (found) {
-        localStorage.setItem("teacherName", found.name);
-        localStorage.setItem("teacherClass", found.class);
-        window.location.href = `teacher.html?name=${encodeURIComponent(found.name)}&class=${encodeURIComponent(found.class)}`;
-      } else {
-        alert("Invalid login credentials.");
-      }
+  function login() {
+    const username = document.getElementById("teacherName").value.trim().toLowerCase();
+    const className = document.getElementById("teacherClass").value.trim();
+    const password = document.getElementById("teacherPassword").value;
+
+    const match = credentials.find(
+      c => c.username === username && c.class === className && c.password === password
+    );
+
+    if (match) {
+      currentTeacher = match;
+      document.getElementById("login-section").classList.add("hidden");
+      document.getElementById("main-section").classList.remove("hidden");
+      document.getElementById("welcome").textContent = `Welcome, ${match.username} (${match.class})`;
+      document.getElementById("loginError").textContent = "";
+    } else {
+      document.getElementById("loginError").textContent = "Invalid login info. Please try again.";
     }
-  </script>
+  }
+
+  function logout() {
+    location.reload();
+  }
+
+  function addStudent() {
+    if (submitted) return;
+    const tbody = document.getElementById("gradeBody");
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true" oninput="updateStatus(this)"></td>
+      <td></td>
+      <td><button onclick="removeRow(this)">Remove</button></td>
+    `;
+    tbody.appendChild(row);
+  }
+
+  function removeRow(btn) {
+    if (submitted) return;
+    btn.closest("tr").remove();
+  }
+
+  function updateStatus(td) {
+    const grade = parseInt(td.textContent);
+    const statusCell = td.nextElementSibling;
+    const row = td.parentElement;
+    if (!isNaN(grade)) {
+      if (grade >= 70) {
+        statusCell.textContent = "Pass";
+        row.className = "pass";
+      } else {
+        statusCell.textContent = "Fail";
+        row.className = "fail";
+      }
+    } else {
+      statusCell.textContent = "";
+      row.className = "";
+    }
+  }
+
+  function submitGrades() {
+    submitted = true;
+    const cells = document.querySelectorAll("td[contenteditable='true']");
+    cells.forEach(cell => cell.setAttribute("contenteditable", "false"));
+    document.getElementById("printBtn").classList.remove("hidden");
+    alert("Grades submitted to principal for approval.");
+  }
+</script>
+
 </body>
 </html>
