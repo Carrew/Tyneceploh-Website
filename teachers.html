@@ -1,460 +1,196 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Teacher Portal - Tyneceploh Educational Foundation</title>
-<style>
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #fff0f6;
-    color: #4d0039;
-    margin: 0; padding: 0;
-  }
-  header {
-    background-color: #b35979;
-    color: white;
-    padding: 20px;
-    text-align: center;
-    font-size: 1.8rem;
-    font-weight: bold;
-  }
-  #loginSection, #portalSection {
-    max-width: 900px;
-    margin: 20px auto;
-    padding: 20px;
-    background: #ffe6f0;
-    border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(179, 89, 121, 0.3);
-  }
-  #loginSection input, #loginSection button {
-    padding: 10px;
-    margin: 8px 0;
-    width: 100%;
-    max-width: 300px;
-    font-size: 1rem;
-    border: 2px solid #b35979;
-    border-radius: 5px;
-  }
-  #loginSection button {
-    background-color: #b35979;
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  #loginSection button:hover {
-    background-color: #8b3c5d;
-  }
-  .error {
-    color: red;
-    margin-top: 8px;
-  }
-  .welcomeMsg {
-    font-size: 1.2rem;
-    margin-bottom: 20px;
-    font-style: italic;
-    color: #662244;
-  }
-  .flex-row {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-bottom: 15px;
-  }
-  button {
-    padding: 8px 14px;
-    border-radius: 6px;
-    border: 2px solid #b35979;
-    background-color: #b35979;
-    color: white;
-    cursor: pointer;
-    font-weight: 600;
-    transition: background-color 0.3s ease;
-  }
-  button:hover {
-    background-color: #8b3c5d;
-  }
-  table {
-    border-collapse: collapse;
-    width: 100%;
-    margin-bottom: 30px;
-  }
-  th, td {
-    border: 1px solid #b35979;
-    padding: 8px;
-    text-align: center;
-  }
-  th {
-    background-color: #f7c6d3;
-    color: #4d0039;
-  }
-  input.gradeInput {
-    width: 60px;
-    text-align: center;
-    border: 1.5px solid #b35979;
-    border-radius: 4px;
-    font-weight: 600;
-  }
-  input.gradeInput.red {
-    background-color: #ffcccc;
-    color: #a30000;
-  }
-  input.gradeInput.blue {
-    background-color: #cce5ff;
-    color: #003366;
-  }
-  .subject-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 8px;
-  }
-  .subject-row input.subjectName {
-    flex-grow: 1;
-  }
-  .subject-row button.remove-subject {
-    background-color: #a30000;
-    border-color: #a30000;
-  }
-  .subject-row button.remove-subject:hover {
-    background-color: #6b0000;
-  }
-  .student-block {
-    border: 2px solid #b35979;
-    border-radius: 10px;
-    padding: 15px;
-    margin-bottom: 25px;
-    background: #fff0f6;
-  }
-  .student-header {
-    font-weight: 700;
-    font-size: 1.1rem;
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .student-header button.remove-student {
-    background-color: #a30000;
-    border-color: #a30000;
-    padding: 5px 10px;
-    font-weight: 600;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-  .student-header button.remove-student:hover {
-    background-color: #6b0000;
-  }
-  #addStudentBtn, #addSubjectBtn {
-    margin-bottom: 20px;
-  }
-  #submitGradesBtn {
-    background-color: #4d0039;
-    border-color: #4d0039;
-    margin-top: 15px;
-    font-size: 1.1rem;
-    padding: 12px 25px;
-  }
-  #submitGradesBtn:hover {
-    background-color: #7a005e;
-  }
-  #logoutBtn {
-    background-color: #a30000;
-    border-color: #a30000;
-    margin-top: 30px;
-    font-size: 1rem;
-    padding: 10px 20px;
-  }
-  #logoutBtn:hover {
-    background-color: #6b0000;
-  }
-  .disabled {
-    pointer-events: none;
-    opacity: 0.6;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Teacher Portal - Tyneceploh</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f3f3f3;
+    }
+    .hidden { display: none; }
+    .blue { color: blue; }
+    .red { color: red; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+    table, th, td { border: 1px solid #ccc; }
+    th, td { padding: 8px; text-align: center; }
+    input[type="text"], input[type="number"], input[type="password"] {
+      padding: 5px;
+      margin: 5px;
+    }
+    button { padding: 6px 10px; margin: 5px; }
+    .logout-btn {
+      float: right;
+      background-color: crimson;
+      color: white;
+    }
+  </style>
 </head>
 <body>
 
-<header>Teacher Portal - Tyneceploh Educational Foundation</header>
+  <h2>Teacher Login</h2>
+  <div id="login-section">
+    <input type="text" id="teacherName" placeholder="Your Name" required />
+    <input type="text" id="teacherClass" placeholder="Class (e.g. Grade 5)" required />
+    <input type="password" id="teacherPass" placeholder="Password" required />
+    <button onclick="login()">Login</button>
+  </div>
 
-<section id="loginSection">
-  <h2>Login</h2>
-  <input type="text" id="teacherName" placeholder="Enter your full name" autocomplete="off" />
-  <input type="text" id="teacherClass" placeholder="Enter your class (e.g. Grade 5A)" autocomplete="off" />
-  <input type="password" id="teacherPassword" placeholder="Password" autocomplete="off" />
-  <button id="loginBtn">Log In</button>
-  <p class="error" id="loginError"></p>
-</section>
+  <div id="dashboard" class="hidden">
+    <h2>Welcome <span id="displayName"></span> - <span id="displayClass"></span></h2>
+    <button class="logout-btn" onclick="logout()">Logout</button><br><br>
 
-<section id="portalSection" style="display:none;">
-  <p class="welcomeMsg" id="welcomeMsg"></p>
+    <button onclick="addStudent()">Add Student</button>
+    <button onclick="addSubject()">Add Subject</button>
+    <button onclick="saveDraft()">Save as Draft</button>
+    <button onclick="submitToPrincipal()">Submit to Principal</button>
 
-  <button id="addStudentBtn">Add Student</button>
-
-  <div id="studentsContainer"></div>
-
-  <button id="submitGradesBtn">Submit Grades to Principal</button>
-
-  <button id="logoutBtn">Logout</button>
-</section>
+    <table id="gradeTable">
+      <thead>
+        <tr>
+          <th>Student Name</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
 
 <script>
-  // Mock teacher credentials (in real app, this is from backend)
-  const validTeachers = [
-    { name: "John", class: "Grade 5", password: "pass" },
-    { name: "Mr. Doe", class: "Grade 5A", password: "pass123" },
-    { name: "Jane Smith", class: "Grade 4B", password: "abc123" }
-  ];
+  let teacherInfo = {
+    name: "John",
+    class: "Grade 5",
+    pass: "pass"
+  };
 
-  // Store login state
-  let loggedInTeacher = null;
-  let studentsData = []; // each student: {id, name, grades: {subject: score}, average, submitted}
+  let submitted = false;
 
-  // Utility: Generate unique ID for students
-  function generateId() {
-    return '_' + Math.random().toString(36).substr(2, 9);
-  }
+  function login() {
+    const name = document.getElementById("teacherName").value.trim();
+    const klass = document.getElementById("teacherClass").value.trim();
+    const pass = document.getElementById("teacherPass").value;
 
-  // Login handler
-  document.getElementById('loginBtn').addEventListener('click', () => {
-    const name = document.getElementById('teacherName').value.trim();
-    const cls = document.getElementById('teacherClass').value.trim();
-    const pass = document.getElementById('teacherPassword').value.trim();
-
-    const teacher = validTeachers.find(t => 
-      t.name.toLowerCase() === name.toLowerCase() &&
-      t.class.toLowerCase() === cls.toLowerCase() &&
-      t.password === pass
-    );
-
-    if (teacher) {
-      loggedInTeacher = teacher;
-      loginSuccess();
+    if (name === teacherInfo.name && klass === teacherInfo.class && pass === teacherInfo.pass) {
+      document.getElementById("login-section").classList.add("hidden");
+      document.getElementById("dashboard").classList.remove("hidden");
+      document.getElementById("displayName").innerText = name;
+      document.getElementById("displayClass").innerText = klass;
     } else {
-      document.getElementById('loginError').textContent = "Invalid login information.";
+      alert("Invalid login info");
     }
-  });
-
-  function loginSuccess() {
-    document.getElementById('loginSection').style.display = 'none';
-    document.getElementById('portalSection').style.display = 'block';
-    document.getElementById('loginError').textContent = '';
-    document.getElementById('welcomeMsg').textContent = `Welcome ${loggedInTeacher.name}! You are managing ${loggedInTeacher.class}.`;
-    studentsData = [];
-    renderStudents();
   }
 
-  // Logout with confirmation
-  document.getElementById('logoutBtn').addEventListener('click', () => {
-    if (confirm("Are you sure you want to logout? Unsaved data will be lost.")) {
-      loggedInTeacher = null;
-      studentsData = [];
-      document.getElementById('portalSection').style.display = 'none';
-      document.getElementById('loginSection').style.display = 'block';
-      clearLoginFields();
-      clearStudentsContainer();
+  function logout() {
+    if (confirm("Are you sure you want to logout?")) {
+      location.reload();
     }
-  });
-
-  function clearLoginFields() {
-    document.getElementById('teacherName').value = '';
-    document.getElementById('teacherClass').value = '';
-    document.getElementById('teacherPassword').value = '';
-    document.getElementById('loginError').textContent = '';
   }
 
-  // Add Student button
-  document.getElementById('addStudentBtn').addEventListener('click', () => {
-    const studentName = prompt("Enter student full name:");
-    if (studentName && studentName.trim() !== '') {
-      const newStudent = {
-        id: generateId(),
-        name: studentName.trim(),
-        grades: {}, // {subject: score}
-        average: 0,
-        submitted: false
-      };
-      studentsData.push(newStudent);
-      renderStudents();
+  function addStudent() {
+    if (submitted) return alert("Grades already submitted.");
+    let table = document.getElementById("gradeTable");
+    let headerRow = table.rows[0];
+    let tbody = table.querySelector("tbody");
+
+    let row = tbody.insertRow();
+    let nameCell = row.insertCell(0);
+    let nameInput = document.createElement("input");
+    nameInput.type = "text";
+    nameInput.placeholder = "Student Name";
+    nameCell.appendChild(nameInput);
+
+    for (let i = 1; i < headerRow.cells.length - 2; i++) {
+      let gradeCell = row.insertCell(i);
+      let gradeInput = document.createElement("input");
+      gradeInput.type = "number";
+      gradeInput.placeholder = "Score";
+      gradeInput.oninput = updateAverage;
+      gradeCell.appendChild(gradeInput);
     }
-  });
 
-  // Render all students
-  function renderStudents() {
-    const container = document.getElementById('studentsContainer');
-    container.innerHTML = '';
-    if(studentsData.length === 0){
-      container.innerHTML = '<p>No students added yet. Use "Add Student" button.</p>';
-      return;
+    let avgCell = row.insertCell(-1);
+    avgCell.className = "average";
+
+    let rankCell = row.insertCell(-1);
+    rankCell.className = "rank";
+  }
+
+  function addSubject() {
+    if (submitted) return alert("Grades already submitted.");
+    let subject = prompt("Enter Subject Name:");
+    if (!subject) return;
+
+    let table = document.getElementById("gradeTable");
+    let headerRow = table.rows[0];
+
+    let newCell = headerRow.insertCell(headerRow.cells.length - 2);
+    newCell.innerText = subject;
+
+    let rows = table.querySelector("tbody").rows;
+    for (let row of rows) {
+      let cell = row.insertCell(row.cells.length - 2);
+      let input = document.createElement("input");
+      input.type = "number";
+      input.placeholder = "Score";
+      input.oninput = updateAverage;
+      cell.appendChild(input);
     }
-    // Sort students by average descending for ranking
-    studentsData.sort((a, b) => b.average - a.average);
+  }
 
-    studentsData.forEach((student, index) => {
-      const studentDiv = document.createElement('div');
-      studentDiv.className = 'student-block';
-      if(student.submitted) studentDiv.classList.add('disabled');
+  function updateAverage() {
+    let table = document.getElementById("gradeTable");
+    let tbody = table.querySelector("tbody");
+    let averages = [];
 
-      // Header with student name & remove button
-      const headerDiv = document.createElement('div');
-      headerDiv.className = 'student-header';
-      headerDiv.innerHTML = `
-        <span><strong>${index+1}. ${student.name}</strong> (Rank)</span>
-        ${student.submitted ? '' : `<button class="remove-student" data-id="${student.id}">Remove Student</button>`}
-      `;
-      studentDiv.appendChild(headerDiv);
-
-      // Subjects and grades table
-      const table = document.createElement('table');
-      table.innerHTML = `
-        <thead>
-          <tr>
-            <th>Subject</th>
-            <th>Grade (60 - 100)</th>
-          </tr>
-        </thead>
-        <tbody class="subjects-body"></tbody>
-        <tfoot>
-          <tr>
-            <td><strong>Average</strong></td>
-            <td id="avg-${student.id}">${student.average.toFixed(2)}</td>
-          </tr>
-        </tfoot>
-      `;
-      studentDiv.appendChild(table);
-
-      // Container for subjects input rows
-      const tbody = table.querySelector('.subjects-body');
-
-      // Render each subject row
-      for(let subject in student.grades) {
-        const tr = createSubjectRow(student.id, subject, student.grades[subject], student.submitted);
-        tbody.appendChild(tr);
+    for (let row of tbody.rows) {
+      let total = 0;
+      let count = 0;
+      for (let i = 1; i < row.cells.length - 2; i++) {
+        let val = parseFloat(row.cells[i].querySelector("input")?.value || 0);
+        if (!isNaN(val)) {
+          total += val;
+          count++;
+        }
       }
 
-      // Add Subject button per student
-      if(!student.submitted){
-        const addSubjBtn = document.createElement('button');
-        addSubjBtn.textContent = 'Add Subject';
-        addSubjBtn.style.marginTop = '10px';
-        addSubjBtn.addEventListener('click', () => {
-          addSubject(student.id);
-        });
-        studentDiv.appendChild(addSubjBtn);
-      }
+      let avg = count ? (total / count).toFixed(2) : 0;
+      let avgCell = row.querySelector(".average");
+      avgCell.innerText = avg;
 
-      container.appendChild(studentDiv);
-    });
+      avgCell.className = avg < 70 ? "average red" : "average blue";
+      averages.push({ row, avg: parseFloat(avg) });
+    }
 
-    // Attach remove student event listeners
-    document.querySelectorAll('.remove-student').forEach(btn => {
-      btn.onclick = () => {
-        const id = btn.getAttribute('data-id');
-        studentsData = studentsData.filter(s => s.id !== id);
-        renderStudents();
-      };
+    averages.sort((a, b) => b.avg - a.avg);
+    averages.forEach((item, index) => {
+      item.row.querySelector(".rank").innerText = index + 1;
     });
   }
 
-  // Create a subject row
-  function createSubjectRow(studentId, subjectName, gradeValue, disabled) {
-    const tr = document.createElement('tr');
-
-    const tdSubject = document.createElement('td');
-    tdSubject.textContent = subjectName;
-    tr.appendChild(tdSubject);
-
-    const tdGrade = document.createElement('td');
-    const inputGrade = document.createElement('input');
-    inputGrade.type = 'number';
-    inputGrade.min = 60;
-    inputGrade.max = 100;
-    inputGrade.value = gradeValue;
-    inputGrade.className = 'gradeInput';
-    inputGrade.disabled = disabled;
-    inputGrade.addEventListener('input', (e) => {
-      let val = Number(e.target.value);
-      if (val < 60) val = 60;
-      if (val > 100) val = 100;
-      e.target.value = val;
-      updateGrade(studentId, subjectName, val);
-    });
-    updateGradeColor(inputGrade, gradeValue);
-
-    tdGrade.appendChild(inputGrade);
-    tr.appendChild(tdGrade);
-
-    return tr;
+  function saveDraft() {
+    if (submitted) return alert("Already submitted!");
+    alert("Grades saved as draft (not submitted yet).");
   }
 
-  // Add subject for a student
-  function addSubject(studentId) {
-    const subjectName = prompt("Enter subject name:");
-    if (!subjectName || subjectName.trim() === '') return alert("Subject name cannot be empty.");
+  function submitToPrincipal() {
+    if (submitted) return;
+    if (!confirm("Submit grades to Principal? You won’t be able to edit after this.")) return;
 
-    // Check if subject already exists for that student
-    const student = studentsData.find(s => s.id === studentId);
-    if(student.grades.hasOwnProperty(subjectName.trim())){
-      return alert("Subject already added for this student.");
-    }
+    submitted = true;
 
-    student.grades[subjectName.trim()] = 60; // default minimum grade
-    updateStudentAverage(student);
-    renderStudents();
+    let inputs = document.querySelectorAll("input");
+    inputs.forEach(input => input.disabled = true);
+
+    alert("Grades submitted to Principal.");
   }
 
-  // Update grade for a student's subject
-  function updateGrade(studentId, subject, grade) {
-    const student = studentsData.find(s => s.id === studentId);
-    if (!student) return;
-    student.grades[subject] = grade;
-    updateStudentAverage(student);
-    renderStudents();
+  // Add average and rank headers
+  window.onload = function () {
+    let headerRow = document.getElementById("gradeTable").rows[0];
+    headerRow.insertCell(-1).innerText = "Average";
+    headerRow.insertCell(-1).innerText = "Rank";
   }
-
-  // Update average grade of a student
-  function updateStudentAverage(student) {
-    const grades = Object.values(student.grades);
-    if(grades.length === 0){
-      student.average = 0;
-      return;
-    }
-    const sum = grades.reduce((a,b) => a + Number(b), 0);
-    student.average = sum / grades.length;
-  }
-
-  // Update color of grade input (red < 70, blue >= 70)
-  function updateGradeColor(inputElement, grade) {
-    if(grade < 70){
-      inputElement.classList.add('red');
-      inputElement.classList.remove('blue');
-    } else {
-      inputElement.classList.add('blue');
-      inputElement.classList.remove('red');
-    }
-  }
-
-  // Submit grades to principal (simulation)
-  document.getElementById('submitGradesBtn').addEventListener('click', () => {
-    if(studentsData.length === 0){
-      return alert("No students to submit.");
-    }
-    // Check if all students have at least one subject and grades
-    for(let student of studentsData){
-      if(Object.keys(student.grades).length === 0){
-        return alert(`Student ${student.name} has no subjects/grades entered.`);
-      }
-    }
-
-    if(confirm("Are you sure you want to submit all grades to the principal? You won't be able to edit after submission.")){
-      // Mark all students as submitted
-      studentsData.forEach(s => s.submitted = true);
-      renderStudents();
-      alert("Grades submitted to principal successfully!");
-    }
-  });
 </script>
-
 </body>
 </html>
