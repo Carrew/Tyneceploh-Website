@@ -1,28 +1,90 @@
-<script>
-  const teacherAccounts = [
-    { name: "Mr. Doe", class: "Grade 5A", password: "pass123" },
-    { name: "Ms. Grace", class: "Grade 6", password: "grace123" },
-    { name: "Mr. Mark", class: "Grade 9", password: "mark123" }
-  ];
-
-  function handleLogin() {
-    const name = document.getElementById("name").value.trim();
-    const className = document.getElementById("class").value.trim();
-    const password = document.getElementById("password").value;
-
-    const found = teacherAccounts.find(account =>
-      account.name === name &&
-      account.class === className &&
-      account.password === password
-    );
-
-    if (found) {
-      localStorage.setItem("teacherName", found.name);
-      localStorage.setItem("teacherClass", found.class);
-      // Redirect to teacher.html now (not teacher_dashboard.html)
-      window.location.href = `teacher.html?name=${encodeURIComponent(found.name)}&class=${encodeURIComponent(found.class)}`;
-    } else {
-      alert("Invalid login credentials.");
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Teacher Login - Tyneceploh Educational Foundation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #ffe6f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
     }
-  }
-</script>
+    .login-container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(179, 89, 121, 0.4);
+      width: 320px;
+    }
+    h2 {
+      text-align: center;
+      color: #b35979;
+      margin-bottom: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0 15px 0;
+      border: 2px solid #b35979;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+    button {
+      background-color: #b35979;
+      color: white;
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #802d48;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h2>Teacher Login</h2>
+    <input type="text" id="name" placeholder="Name" required />
+    <input type="text" id="class" placeholder="Class" required />
+    <input type="password" id="password" placeholder="Password" required />
+    <button onclick="handleLogin()">Login</button>
+  </div>
+
+  <script>
+    const teacherAccounts = [
+      { name: "Mr. Doe", class: "Grade 5A", password: "pass123" },
+      { name: "Ms. Grace", class: "Grade 6", password: "grace123" },
+      { name: "Mr. Mark", class: "Grade 9", password: "mark123" }
+    ];
+
+    function handleLogin() {
+      const name = document.getElementById("name").value.trim();
+      const className = document.getElementById("class").value.trim();
+      const password = document.getElementById("password").value;
+
+      const found = teacherAccounts.find(account =>
+        account.name === name &&
+        account.class === className &&
+        account.password === password
+      );
+
+      if (found) {
+        localStorage.setItem("teacherName", found.name);
+        localStorage.setItem("teacherClass", found.class);
+        window.location.href = `teacher.html?name=${encodeURIComponent(found.name)}&class=${encodeURIComponent(found.class)}`;
+      } else {
+        alert("Invalid login credentials.");
+      }
+    }
+  </script>
+</body>
+</html>
