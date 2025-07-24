@@ -1,8 +1,9 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Teacher Portal</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Teacher Portal - Subjects & Grades</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -20,11 +21,17 @@
     }
     th, td {
       border: 1px solid #ccc;
-      padding: 8px;
+      padding: 6px;
       text-align: center;
     }
-    th {
-      background-color: #eee;
+    th input.subject-name {
+      width: 90%;
+      font-weight: bold;
+      font-size: 0.9rem;
+      padding: 2px 4px;
+    }
+    input.grade-input {
+      width: 60px;
     }
     button {
       margin: 10px 5px;
@@ -45,6 +52,9 @@
     .red {
       color: red;
     }
+    input:disabled {
+      background-color: #ddd;
+    }
   </style>
 </head>
 <body>
@@ -52,69 +62,103 @@
   <button onclick="addSubject()">➕ Add Subject</button>
   <button onclick="addStudent()">➕ Add Student</button>
   <button onclick="saveDraft()">💾 Save as Draft</button>
-  <button id="logout" onclick="confirmLogout()">🚪 Logout</button>  <table id="gradeTable">
+  <button onclick="submitGrades()">📤 Submit Grades</button>
+  <button id="logout" onclick="confirmLogout()">🚪 Logout</button>
+
+  <table id="gradeTable">
     <tr>
       <th>Student Name</th>
-      <th>Subject 1</th>
+      <!-- Subject name header inputs will go here -->
       <th>Average</th>
       <th>Rank</th>
     </tr>
     <tr>
       <td><input placeholder="Student 1"></td>
-      <td><input type="number" min="60" max="100" oninput="updateAverage(1)"></td>
+      <!-- Grade inputs will go here -->
       <td class="avg">-</td>
       <td class="rank">-</td>
     </tr>
-  </table>  <script>
+  </table>
+
+  <script>
     let studentCount = 1;
-    let subjectCount = 1;
+    let subjectCount = 0;
+    let gradesSubmitted = false;
 
     function addSubject() {
-      subjectCount++;
+      if (gradesSubmitted) return alert('Grades already submitted, cannot add subject.');
+
       const table = document.getElementById("gradeTable");
       const headerRow = table.rows[0];
-      const avgIndex = headerRow.cells.length - 2;
 
-      const newHeader = document.createElement("th");
-      newHeader.innerText = `Subject ${subjectCount}`;
-      headerRow.insertBefore(newHeader, headerRow.cells[avgIndex]);
+      subjectCount++;
 
+      // Add subject name header cell with input
+      const subjectNameTh = document.createElement("th");
+      const subjectInput = document.createElement("input");
+      subjectInput.type = "text";
+      subjectInput.placeholder = `Subject ${subjectCount}`;
+      subjectInput.className = "subject-name";
+      subjectInput.oninput = () => updateAllAverages(); // in case needed
+      subjectNameTh.appendChild(subjectInput);
+      // Insert before Average header (2nd last)
+      headerRow.insertBefore(subjectNameTh, headerRow.cells[headerRow.cells.length - 2]);
+
+      // Add empty header for grades - optional, we merge grade input under subject name
+      // Instead of separate grade column, we use the same subject column for grades below header.
+
+      // For each student row, add a grade input cell
       for (let i = 1; i < table.rows.length; i++) {
         const row = table.rows[i];
-        const inputCell = document.createElement("td");
-        const input = document.createElement("input");
-        input.type = "number";
-        input.min = 60;
-        input.max = 100;
-        input.oninput = () => updateAverage(i);
-        inputCell.appendChild(input);
-        row.insertBefore(inputCell, row.cells[avgIndex]);
+        const gradeTd = document.createElement("td");
+        const gradeInput = document.createElement("input");
+        gradeInput.type = "number";
+        gradeInput.min = 60;
+        gradeInput.max = 100;
+        gradeInput.className = "grade-input";
+        gradeInput.oninput = () => updateAverage(i);
+        gradeTd.appendChild(gradeInput);
+        // Insert before Average cell (2nd last)
+        row.insertBefore(gradeTd, row.cells[row.cells.length - 2]);
       }
+
+      updateAllAverages();
     }
 
     function addStudent() {
+      if (gradesSubmitted) return alert('Grades already submitted, cannot add student.');
       studentCount++;
       const table = document.getElementById("gradeTable");
       const row = table.insertRow(-1);
+
+      // Student name cell
       const nameCell = row.insertCell(0);
       const nameInput = document.createElement("input");
       nameInput.placeholder = `Student ${studentCount}`;
       nameCell.appendChild(nameInput);
 
-      for (let j = 0; j < subjectCount; j++) {
+      // Add grade input cells for each subject
+      for (let i = 0; i < subjectCount; i++) {
         const gradeCell = row.insertCell(-1);
-        const input = document.createElement("input");
-        input.type = "number";
-        input.min = 60;
-        input.max = 100;
-        input.oninput = () => updateAverage(table.rows.length - 1);
-        gradeCell.appendChild(input);
+        const gradeInput = document.createElement("input");
+        gradeInput.type = "number";
+        gradeInput.min = 60;
+        gradeInput.max = 100;
+        gradeInput.className = "grade-input";
+        gradeInput.oninput = () => updateAverage(table.rows.length - 1);
+        gradeCell.appendChild(gradeInput);
       }
 
+      // Average cell
       const avgCell = row.insertCell(-1);
       avgCell.className = "avg";
+      avgCell.textContent = "-";
+
+      // Rank cell
       const rankCell = row.insertCell(-1);
       rankCell.className = "rank";
+      rankCell.textContent = "-";
+
       updateAllAverages();
     }
 
@@ -123,6 +167,7 @@
       const row = table.rows[rowIndex];
       let total = 0;
       let count = 0;
+
       for (let i = 1; i <= subjectCount; i++) {
         const input = row.cells[i].querySelector("input");
         const val = parseFloat(input.value);
@@ -131,16 +176,21 @@
           count++;
         }
       }
-      const avg = count ? (total / count).toFixed(2) : "-";
-      const avgCell = row.cells[row.cells.length - 2];
-      avgCell.textContent = avg;
 
-      if (avg !== "-" && avg < 70) {
-        avgCell.classList.add("red");
-        avgCell.classList.remove("blue");
+      const avgCell = row.cells[row.cells.length - 2];
+      if (count === 0) {
+        avgCell.textContent = "-";
+        avgCell.classList.remove("red", "blue");
       } else {
-        avgCell.classList.add("blue");
-        avgCell.classList.remove("red");
+        const avg = total / count;
+        avgCell.textContent = avg.toFixed(2);
+        if (avg < 70) {
+          avgCell.classList.add("red");
+          avgCell.classList.remove("blue");
+        } else {
+          avgCell.classList.add("blue");
+          avgCell.classList.remove("red");
+        }
       }
 
       updateRanks();
@@ -170,14 +220,38 @@
       });
     }
 
+    function saveDraft() {
+      alert("Draft saved locally (simulate).");
+      // You can add localStorage saving here
+    }
+
+    function submitGrades() {
+      if (gradesSubmitted) return alert("Grades already submitted.");
+      // Lock inputs, save data etc - code here as before
+      alert("Grades submitted (simulate). Inputs locked.");
+      gradesSubmitted = true;
+
+      // Disable all inputs
+      const table = document.getElementById("gradeTable");
+      for (let i = 1; i < table.rows.length; i++) {
+        for (let j = 0; j < table.rows[i].cells.length; j++) {
+          const input = table.rows[i].cells[j].querySelector("input");
+          if(input) input.disabled = true;
+        }
+      }
+      // Disable header subject name inputs too
+      const headerRow = table.rows[0];
+      for(let i =1; i <= subjectCount; i++) {
+        const input = headerRow.cells[i].querySelector("input");
+        if(input) input.disabled = true;
+      }
+    }
+
     function confirmLogout() {
       if (confirm("Are you sure you want to logout?")) {
         window.location.href = "index.html";
       }
     }
-
-    function saveDraft() {
-      alert("Draft saved locally. Later this will store to the backend.");
-    }
-  </script></body>
+  </script>
+</body>
 </html>
