@@ -1,68 +1,293 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Teacher Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Teacher Portal - Grade Submission</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background: #f4f4f4; }
-    .hidden { display: none; }
-    .error { color: red; }
-    table, th, td { border: 1px solid black; border-collapse: collapse; padding: 8px; }
-    th { background: #eee; }
-    .pass { background-color: lightblue; }
-    .fail { background-color: lightcoral; }
-    .button { margin: 5px; padding: 5px 10px; }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    th,
+    td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #eee;
+    }
+
+    .failing {
+      color: red;
+    }
+
+    .passing {
+      color: blue;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      margin: 5px;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .btn-add,
+    .btn-remove {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .btn-submit {
+      background-color: green;
+      color: white;
+    }
+
+    .btn-print {
+      background-color: orange;
+      color: white;
+      display: none;
+    }
+
+    .disabled {
+      pointer-events: none;
+      opacity: 0.6;
+    }
+
+    /* Login styles */
+    #login-section {
+      max-width: 400px;
+      margin: 100px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    #login-section input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      box-sizing: border-box;
+    }
+
+    #login-section button {
+      width: 100%;
+      padding: 10px;
+      background-color: #007bff;
+      border: none;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    #login-error {
+      color: red;
+      text-align: center;
+    }
   </style>
 </head>
+
 <body>
+
+  <!-- LOGIN FORM -->
   <div id="login-section">
     <h2>Teacher Login</h2>
-    <input type="text" id="teacherName" placeholder="Name"><br><br>
-    <input type="text" id="teacherClass" placeholder="Class"><br><br>
-    <input type="password" id="teacherPassword" placeholder="Password"><br><br>
+    <input type="text" id="loginName" placeholder="Name" />
+    <input type="text" id="loginClass" placeholder="Class" />
+    <input type="password" id="loginPass" placeholder="Password" />
     <button onclick="login()">Log In</button>
-    <p class="error" id="loginError"></p>
-  </div>  <div id="main-section" class="hidden">
-    <!-- Your full grade sheet UI from earlier will remain here, untouched -->
-    <!-- Example placeholder: -->
-    <h2 id="welcome"></h2>
-    <!-- Grade sheet content will follow below this -->
-    <div id="grade-sheet"></div>
-    <button onclick="logout()">Logout</button>
-  </div>  <script>
+    <p id="login-error"></p>
+  </div>
+
+  <!-- TEACHER PORTAL (hidden until login) -->
+  <div id="teacher-portal" style="display:none;">
+    <div class="container">
+      <h2>Teacher Report Card Entry</h2>
+
+      <div>
+        <label for="teacherName">Teacher Name:</label>
+        <input type="text" id="teacherName" value="John" disabled />
+        <label for="teacherClass">Class:</label>
+        <input type="text" id="teacherClass" value="Grade 5" disabled />
+      </div>
+
+      <div>
+        <button class="btn btn-add" onclick="addStudent()">Add Student</button>
+        <button class="btn btn-add" onclick="addSubject()">Add Subject</button>
+      </div>
+
+      <table id="gradeTable">
+        <thead>
+          <tr>
+            <th>Student Name</th>
+            <th>Period</th>
+            <th>Subjects & Grades</th>
+            <th>Average</th>
+            <th>Rank</th>
+            <th>Remove</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+
+      <button class="btn btn-submit" onclick="submitGrades()">Submit Grades</button>
+      <button class="btn btn-print" id="printBtn" onclick="window.print()">Print</button>
+      <button class="btn btn-remove" onclick="logout()" style="background:#d9534f; margin-left:10px;">Logout</button>
+    </div>
+  </div>
+
+  <script>
+    // Hardcoded credentials — you can expand later or connect to backend
     const credentials = [
       { name: "John", class: "Grade 5", password: "pass" },
       { name: "Mr. Doe", class: "Grade 5A", password: "pass123" }
     ];
 
     function login() {
-      const name = document.getElementById("teacherName").value;
-      const className = document.getElementById("teacherClass").value;
-      const password = document.getElementById("teacherPassword").value;
+      const name = document.getElementById("loginName").value.trim();
+      const className = document.getElementById("loginClass").value.trim();
+      const password = document.getElementById("loginPass").value;
 
-      const match = credentials.find(
-        c => c.name === name && c.class === className && c.password === password
-      );
+      const user = credentials.find(c => c.name === name && c.class === className && c.password === password);
 
-      if (match) {
-        document.getElementById("login-section").classList.add("hidden");
-        document.getElementById("main-section").classList.remove("hidden");
-        document.getElementById("welcome").textContent = `Welcome, ${name} (${className})`;
+      if (user) {
+        // Hide login form
+        document.getElementById("login-section").style.display = "none";
+        // Show teacher portal
+        document.getElementById("teacher-portal").style.display = "block";
 
-        // Load existing grade sheet UI (you already have this below)
-        loadGradeSheet();
+        // Fill teacher info fields
+        document.getElementById("teacherName").value = user.name;
+        document.getElementById("teacherClass").value = user.class;
+
+        // Clear login error if any
+        document.getElementById("login-error").textContent = "";
       } else {
-        document.getElementById("loginError").textContent = "Invalid login info. Please try again.";
+        document.getElementById("login-error").textContent = "Invalid login info. Please try again.";
       }
     }
 
     function logout() {
-      location.reload();
+      location.reload(); // reload page to logout and show login form again
     }
 
-    function loadGradeSheet() {
-      // Your existing teacher dashboard and grade sheet HTML code should be placed here.
-      document.getElementById("grade-sheet").innerHTML = `<!-- INSERT YOUR ENTIRE GRADESHEET HTML HERE -->`;
+    // Your existing functions below (addStudent, addSubject, calculateAverage, updateRanking, submitGrades)
+
+    let students = [];
+
+    function addStudent() {
+      const studentName = prompt("Enter student name:");
+      const period = prompt("Enter period (e.g., 1st, 2nd):");
+      if (!studentName || !period) return;
+
+      const row = document.createElement('tr');
+      row.dataset.student = studentName;
+      row.dataset.period = period;
+
+      const nameCell = document.createElement('td');
+      nameCell.textContent = studentName;
+      const periodCell = document.createElement('td');
+      periodCell.textContent = period;
+      const subjectCell = document.createElement('td');
+      subjectCell.classList.add('subjects');
+      const avgCell = document.createElement('td');
+      avgCell.className = 'average';
+      const rankCell = document.createElement('td');
+      rankCell.className = 'rank';
+      const removeCell = document.createElement('td');
+      const removeBtn = document.createElement('button');
+      removeBtn.textContent = 'Remove';
+      removeBtn.className = 'btn btn-remove';
+      removeBtn.onclick = () => row.remove();
+      removeCell.appendChild(removeBtn);
+
+      row.append(nameCell, periodCell, subjectCell, avgCell, rankCell, removeCell);
+      document.getElementById('tableBody').appendChild(row);
     }
-  </script></body>
+
+    function addSubject() {
+      const subject = prompt("Enter subject:");
+      if (!subject) return;
+
+      const rows = document.querySelectorAll('#gradeTable tbody tr');
+      rows.forEach(row => {
+        const gradeInput = document.createElement('input');
+        gradeInput.type = 'number';
+        gradeInput.min = 0;
+        gradeInput.max = 100;
+        gradeInput.placeholder = subject;
+        gradeInput.oninput = () => calculateAverage(row);
+        row.querySelector('.subjects').appendChild(gradeInput);
+      });
+    }
+
+    function calculateAverage(row) {
+      const inputs = row.querySelectorAll('.subjects input');
+      let sum = 0;
+      let count = 0;
+      inputs.forEach(input => {
+        const val = parseFloat(input.value);
+        if (!isNaN(val)) {
+          sum += val;
+          count++;
+        }
+      });
+      const avg = count ? sum / count : 0;
+      const avgCell = row.querySelector('.average');
+      avgCell.textContent = avg.toFixed(2);
+      avgCell.className = avg >= 70 ? 'average passing' : 'average failing';
+      updateRanking();
+    }
+
+    function updateRanking() {
+      const rows = Array.from(document.querySelectorAll('#gradeTable tbody tr'));
+      rows.sort((a, b) => {
+        const aAvg = parseFloat(a.querySelector('.average').textContent) || 0;
+        const bAvg = parseFloat(b.querySelector('.average').textContent) || 0;
+        return bAvg - aAvg;
+      });
+      rows.forEach((row, index) => {
+        row.querySelector('.rank').textContent = index + 1;
+      });
+    }
+
+    function submitGrades() {
+      if (!confirm("Are you sure you want to submit grades? After submission, editing will be disabled.")) return;
+      document.querySelectorAll('input').forEach(input => input.disabled = true);
+      document.querySelectorAll('.btn-add, .btn-remove, .btn-submit').forEach(btn => btn.classList.add('disabled'));
+      document.getElementById('printBtn').style.display = 'inline-block';
+      alert("Grades submitted and locked. Awaiting principal approval.");
+    }
+  </script>
+</body>
+
 </html>
