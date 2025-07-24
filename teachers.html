@@ -161,8 +161,8 @@
 
       const avg = total / count;
       avgCell.textContent = avg.toFixed(2);
-      statusCell.textContent = avg >= 60 ? "Pass" : "Fail";
-      statusCell.className = avg >= 60 ? "status pass" : "status fail";
+      statusCell.textContent = avg >= 70 ? "Pass" : "Fail";
+      statusCell.className = avg >= 70 ? "status pass" : "status fail";
     }
 
     function submitGrades() {
