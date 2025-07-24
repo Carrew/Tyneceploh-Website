@@ -12,167 +12,124 @@
     th { background: #eee; }
     .pass { background-color: lightblue; }
     .fail { background-color: lightcoral; }
-    .button { margin: 5px; padding: 5px 10px; }
-    input:disabled { background: #ddd; }
   </style>
 </head>
 <body>
+
+  <!-- Login section -->
   <div id="login-section">
     <h2>Teacher Login</h2>
-    <input type="text" id="teacherName" placeholder="Name"><br><br>
-    <input type="text" id="teacherClass" placeholder="Class"><br><br>
-    <input type="password" id="teacherPassword" placeholder="Password"><br><br>
+    <input type="text" id="username" placeholder="Username"><br><br>
+    <input type="password" id="password" placeholder="Password"><br><br>
     <button onclick="login()">Log In</button>
     <p class="error" id="loginError"></p>
   </div>
 
+  <!-- Main content hidden until login -->
   <div id="main-section" class="hidden">
-    <h2 id="welcome"></h2>
-    <div id="grade-sheet">
-      <button onclick="addStudent()">Add Student</button>
-      <button onclick="addSubject()">Add Subject</button>
-      <button onclick="submitGrades()">Submit</button>
-      <button id="approveBtn" onclick="approveGrades()" class="hidden">Approve</button>
-      <button id="printBtn" onclick="window.print()" class="hidden">Print</button>
-      <br><br>
-      <table id="gradeTable">
-        <thead>
-          <tr>
-            <th>Student Name</th>
-            <th>Subjects & Grades</th>
-            <th>Average</th>
-            <th>Status</th>
-            <th>Remove</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-    <br>
-    <button onclick="logout()">Logout</button>
+    <h2>Teacher Grade Submission</h2>
+
+    <table id="gradeTable">
+      <thead>
+        <tr>
+          <th>Student Name</th>
+          <th>Subject</th>
+          <th>Grade</th>
+          <th>Status</th>
+          <th>Remove</th>
+        </tr>
+      </thead>
+      <tbody id="gradeBody"></tbody>
+    </table>
+
+    <button onclick="addRow()">Add Student Grade</button>
+    <button onclick="submitGrades()">Submit Grades to Principal</button>
   </div>
 
   <script>
-    const credentials = [
-      { name: "John", class: "Grade 5", password: "pass" },
-      { name: "Mr. Doe", class: "Grade 5A", password: "pass123" }
+    // Hardcoded teacher credentials for demo
+    const validUsers = [
+      { username: "teacher1", password: "pass123" },
+      { username: "teacher2", password: "mypassword" }
     ];
 
     function login() {
-      const name = document.getElementById("teacherName").value.trim();
-      const className = document.getElementById("teacherClass").value.trim();
-      const password = document.getElementById("teacherPassword").value;
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value;
 
-      const match = credentials.find(
-        c => c.name === name && c.class === className && c.password === password
-      );
+      const user = validUsers.find(u => u.username === username && u.password === password);
 
-      if (match) {
+      if (user) {
         document.getElementById("login-section").classList.add("hidden");
         document.getElementById("main-section").classList.remove("hidden");
-        document.getElementById("welcome").textContent = `Welcome, ${name} (${className})`;
+        document.getElementById("loginError").textContent = "";
+        // Initialize with one row when logged in
+        addRow();
       } else {
-        document.getElementById("loginError").textContent = "Invalid login info. Please try again.";
+        document.getElementById("loginError").textContent = "Invalid username or password.";
       }
     }
 
-    function logout() {
-      location.reload();
+    function addRow() {
+      const tbody = document.getElementById('gradeBody');
+      const row = document.createElement('tr');
+
+      row.innerHTML = `
+        <td contenteditable="true"></td>
+        <td contenteditable="true"></td>
+        <td contenteditable="true" oninput="updateStatus(this)"></td>
+        <td></td>
+        <td><button onclick="removeRow(this)">Remove</button></td>
+      `;
+
+      tbody.appendChild(row);
     }
 
-    function addStudent() {
-      const name = prompt("Enter student name:");
-      if (!name) return;
-
-      const table = document.querySelector("#gradeTable tbody");
-      const row = document.createElement("tr");
-
-      const nameCell = document.createElement("td");
-      nameCell.textContent = name;
-
-      const subjectsCell = document.createElement("td");
-      subjectsCell.classList.add("subjects");
-
-      const averageCell = document.createElement("td");
-      averageCell.classList.add("average");
-
-      const statusCell = document.createElement("td");
-      statusCell.classList.add("status");
-
-      const removeCell = document.createElement("td");
-      const removeBtn = document.createElement("button");
-      removeBtn.textContent = "Remove";
-      removeBtn.onclick = () => row.remove();
-      removeCell.appendChild(removeBtn);
-
-      row.appendChild(nameCell);
-      row.appendChild(subjectsCell);
-      row.appendChild(averageCell);
-      row.appendChild(statusCell);
-      row.appendChild(removeCell);
-
-      table.appendChild(row);
+    function removeRow(btn) {
+      btn.closest('tr').remove();
     }
 
-    function addSubject() {
-      const subject = prompt("Enter subject:");
-      if (!subject) return;
+    function updateStatus(td) {
+      const grade = parseInt(td.textContent);
+      const statusCell = td.nextElementSibling;
+      const row = td.parentElement;
 
-      const rows = document.querySelectorAll('#gradeTable tbody tr');
-      rows.forEach(row => {
-        const subjectWrapper = document.createElement('div');
-        subjectWrapper.style.marginBottom = '5px';
-
-        const label = document.createElement('label');
-        label.textContent = subject + ': ';
-        label.style.marginRight = '5px';
-
-        const gradeInput = document.createElement('input');
-        gradeInput.type = 'number';
-        gradeInput.min = 0;
-        gradeInput.max = 100;
-        gradeInput.oninput = () => calculateAverage(row);
-
-        subjectWrapper.appendChild(label);
-        subjectWrapper.appendChild(gradeInput);
-        row.querySelector('.subjects').appendChild(subjectWrapper);
-      });
-    }
-
-    function calculateAverage(row) {
-      const inputs = row.querySelectorAll('.subjects input');
-      let total = 0, count = 0;
-      inputs.forEach(input => {
-        const val = parseFloat(input.value);
-        if (!isNaN(val)) {
-          total += val;
-          count++;
+      if (!isNaN(grade)) {
+        if (grade >= 70) {
+          statusCell.textContent = 'Pass';
+          row.className = 'pass';
+        } else {
+          statusCell.textContent = 'Fail';
+          row.className = 'fail';
         }
-      });
-
-      const avgCell = row.querySelector('.average');
-      const statusCell = row.querySelector('.status');
-      if (count === 0) {
-        avgCell.textContent = "-";
-        statusCell.textContent = "-";
-        statusCell.className = "status";
-        return;
+      } else {
+        statusCell.textContent = '';
+        row.className = '';
       }
-
-      const avg = total / count;
-      avgCell.textContent = avg.toFixed(2);
-      statusCell.textContent = avg >= 70 ? "Pass" : "Fail";
-      statusCell.className = avg >= 70 ? "status pass" : "status fail";
     }
 
     function submitGrades() {
-      const allInputs = document.querySelectorAll("input[type='number']");
-      allInputs.forEach(input => input.disabled = true);
-      document.getElementById("approveBtn").classList.remove("hidden");
-    }
+      const rows = document.querySelectorAll('#gradeBody tr');
+      let grades = [];
 
-    function approveGrades() {
-      document.getElementById("printBtn").classList.remove("hidden");
+      rows.forEach(row => {
+        const student = row.cells[0].textContent.trim();
+        const subject = row.cells[1].textContent.trim();
+        const gradeText = row.cells[2].textContent.trim();
+        const grade = parseInt(gradeText);
+
+        if(student && subject && !isNaN(grade)) {
+          grades.push({ student, subject, grade });
+        }
+      });
+
+      if(grades.length === 0) {
+        alert("No valid grades to submit.");
+        return;
+      }
+
+      localStorage.setItem('submittedGrades', JSON.stringify(grades));
+      alert("Grades submitted to principal for approval.");
     }
   </script>
 </body>
