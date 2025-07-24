@@ -3,36 +3,45 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Student Grade Sheet - Tyneceploh EF</title>
+<title>Tyneceploh EF Grade Management</title>
 <style>
   body {
     font-family: Arial, sans-serif;
-    padding: 20px;
-    max-width: 900px;
-    margin: auto;
     background: #fff0f6;
     color: #4d0039;
+    max-width: 1000px;
+    margin: auto;
+    padding: 20px;
   }
-  h1 {
-    text-align: center;
-    margin-bottom: 5px;
-  }
-  #studentName {
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin-bottom: 20px;
+  h1, h2 {
     text-align: center;
     color: #b35979;
+  }
+  select, input[type="text"], input[type="password"], button {
+    padding: 8px;
+    margin: 5px 0;
+    font-size: 1rem;
+  }
+  button {
+    background: #b35979;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 8px;
+  }
+  button:hover:not(:disabled) {
+    background: #80334a;
   }
   table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 15px;
+    margin: 20px 0 10px 0;
   }
   th, td {
     border: 1px solid #b35979;
-    padding: 6px;
     text-align: center;
+    padding: 8px;
   }
   th.subject-col {
     width: 150px;
@@ -40,24 +49,8 @@
   }
   input.grade-input {
     width: 50px;
-    text-align: center;
     font-weight: bold;
-  }
-  button {
-    background: #b35979;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    cursor: pointer;
-    border-radius: 5px;
-    margin-right: 8px;
-    margin-bottom: 15px;
-  }
-  button:hover {
-    background: #80334a;
-  }
-  #addSubjectBtn {
-    margin-bottom: 20px;
+    text-align: center;
   }
   .average-cell {
     font-weight: bold;
@@ -68,135 +61,362 @@
     font-size: 1.1rem;
     background: #eaa2b3;
   }
+  .grade-low {
+    color: red;
+    font-weight: bold;
+  }
+  .grade-high {
+    color: blue;
+    font-weight: bold;
+  }
+  .hidden {
+    display: none;
+  }
+  .container {
+    margin-top: 20px;
+  }
+  #loginSection, #teacherSection, #principalSection {
+    max-width: 600px;
+    margin: auto;
+  }
+  #logoutBtn {
+    background: #cc4444;
+    margin-top: 10px;
+  }
+  /* Print styles */
+  @media print {
+    button, #loginSection, #teacherSection #principalSection, #logoutBtn {
+      display: none;
+    }
+    table, th, td {
+      border: 1px solid black;
+      color: black;
+    }
+  }
 </style>
 </head>
 <body>
 
-<h1>Student Grade Sheet</h1>
-<div id="studentName">Name: <input type="text" id="studentNameInput" placeholder="Enter Student Name" /></div>
+<h1>Tyneceploh Educational Foundation</h1>
 
-<button id="addSubjectBtn" onclick="addSubject()">➕ Add Subject</button>
+<div id="loginSection">
+  <h2>Login</h2>
+  <label>
+    Role:
+    <select id="roleSelect">
+      <option value="teacher">Teacher</option>
+      <option value="principal">Principal</option>
+    </select>
+  </label>
+  <br/>
+  <label>
+    Name: <input type="text" id="loginName" placeholder="Your Name" />
+  </label>
+  <br/>
+  <label id="classLabel">
+    Class: <input type="text" id="loginClass" placeholder="Your Class" />
+  </label>
+  <br/>
+  <label>
+    Password: <input type="password" id="loginPass" placeholder="Password" />
+  </label>
+  <br/>
+  <button id="loginBtn">Login</button>
+  <p id="loginError" style="color:red; display:none;">Invalid login info.</p>
+</div>
 
-<table id="gradeSheetTable">
-  <thead>
-    <tr>
-      <th class="subject-col">Subject</th>
-      <th>Period 1</th>
-      <th>Period 2</th>
-      <th>Period 3</th>
-      <th>Period 4</th>
-      <th>Period 5</th>
-      <th>Period 6</th>
-      <th>Average</th>
-      <th>Remove</th>
-    </tr>
-  </thead>
-  <tbody>
-    <!-- Subject rows will be added here dynamically -->
-  </tbody>
-  <tfoot>
-    <tr>
-      <td colspan="7" style="text-align: right; font-weight:bold;">Total Average</td>
-      <td id="totalAverageCell">-</td>
-      <td></td>
-    </tr>
-  </tfoot>
-</table>
+<div id="teacherSection" class="hidden">
+  <h2>Teacher Portal</h2>
+  <div>
+    <label>
+      Select Student:
+      <select id="studentSelect"></select>
+    </label>
+    <button id="addStudentBtn">➕ Add New Student</button>
+    <input type="text" id="newStudentName" placeholder="New Student Name" style="display:none;"/>
+    <button id="saveNewStudentBtn" style="display:none;">Save Student</button>
+  </div>
+
+  <div class="container" id="gradeSheetContainer">
+    <h3>Grade Sheet for: <span id="currentStudentName"></span></h3>
+    <button id="addSubjectBtn">➕ Add Subject</button>
+    <table id="gradeSheetTable">
+      <thead>
+        <tr>
+          <th class="subject-col">Subject</th>
+          <th>Period 1</th>
+          <th>Period 2</th>
+          <th>Period 3</th>
+          <th>Period 4</th>
+          <th>Period 5</th>
+          <th>Period 6</th>
+          <th>Average</th>
+          <th>Remove</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+      <tfoot>
+        <tr>
+          <td colspan="7" style="text-align: right; font-weight:bold;">Total Average</td>
+          <td id="totalAverageCell">-</td>
+          <td></td>
+        </tr>
+      </tfoot>
+    </table>
+    <button id="saveDraftBtn">💾 Save Draft</button>
+    <button id="submitGradesBtn">✅ Submit Grades (Lock Editing)</button>
+  </div>
+  <button id="logoutBtn">Logout</button>
+</div>
+
+<div id="principalSection" class="hidden">
+  <h2>Principal Portal - Submitted Reports</h2>
+  <div>
+    <label>
+      Select Student:
+      <select id="principalStudentSelect"></select>
+    </label>
+  </div>
+  <div class="container" id="principalReportContainer">
+    <h3>Report for: <span id="principalCurrentStudentName"></span></h3>
+    <table id="principalReportTable">
+      <thead>
+        <tr>
+          <th class="subject-col">Subject</th>
+          <th>Period 1</th>
+          <th>Period 2</th>
+          <th>Period 3</th>
+          <th>Period 4</th>
+          <th>Period 5</th>
+          <th>Period 6</th>
+          <th>Average</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+      <tfoot>
+        <tr>
+          <td colspan="7" style="text-align: right; font-weight:bold;">Total Average</td>
+          <td id="principalTotalAverageCell">-</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+  <button id="logoutBtn2">Logout</button>
+</div>
 
 <script>
-  const tbody = document.querySelector("#gradeSheetTable tbody");
-  let subjectCount = 0;
+  // Dummy user database for login
+  const users = {
+    teacher: [
+      { name: "Mr. Doe", class: "5A", password: "pass123" },
+      { name: "Ms. Jane", class: "4B", password: "teach456" }
+    ],
+    principal: [
+      { name: "Principal", password: "admin123" }
+    ]
+  };
 
-  function addSubject() {
-    subjectCount++;
-    const tr = document.createElement("tr");
+  // App state
+  let currentUser = null; // {role, name, class}
+  let studentsData = {}; // { studentName: { subjects: [{name, grades: [6]}, submitted: bool] } }
+  let currentStudent = null;
 
-    // Subject Name cell with input
-    const subjectTd = document.createElement("td");
-    const subjectInput = document.createElement("input");
-    subjectInput.type = "text";
-    subjectInput.placeholder = `Subject ${subjectCount}`;
-    subjectInput.style.width = "90%";
-    subjectTd.appendChild(subjectInput);
-    tr.appendChild(subjectTd);
+  // DOM elements
+  const loginSection = document.getElementById("loginSection");
+  const teacherSection = document.getElementById("teacherSection");
+  const principalSection = document.getElementById("principalSection");
+  const loginBtn = document.getElementById("loginBtn");
+  const logoutBtn = document.getElementById("logoutBtn");
+  const logoutBtn2 = document.getElementById("logoutBtn2");
+  const roleSelect = document.getElementById("roleSelect");
+  const loginName = document.getElementById("loginName");
+  const loginClass = document.getElementById("loginClass");
+  const loginPass = document.getElementById("loginPass");
+  const loginError = document.getElementById("loginError");
+  const classLabel = document.getElementById("classLabel");
 
-    // Create 6 period grade input cells
-    for (let i = 1; i <= 6; i++) {
-      const gradeTd = document.createElement("td");
-      const gradeInput = document.createElement("input");
-      gradeInput.type = "number";
-      gradeInput.min = 60;
-      gradeInput.max = 100;
-      gradeInput.className = "grade-input";
-      gradeInput.addEventListener("input", () => updateRowAverage(tr));
-      gradeTd.appendChild(gradeInput);
-      tr.appendChild(gradeTd);
+  const studentSelect = document.getElementById("studentSelect");
+  const addStudentBtn = document.getElementById("addStudentBtn");
+  const newStudentNameInput = document.getElementById("newStudentName");
+  const saveNewStudentBtn = document.getElementById("saveNewStudentBtn");
+
+  const currentStudentNameSpan = document.getElementById("currentStudentName");
+  const gradeSheetTableBody = document.querySelector("#gradeSheetTable tbody");
+  const totalAverageCell = document.getElementById("totalAverageCell");
+  const addSubjectBtn = document.getElementById("addSubjectBtn");
+  const saveDraftBtn = document.getElementById("saveDraftBtn");
+  const submitGradesBtn = document.getElementById("submitGradesBtn");
+
+  const principalStudentSelect = document.getElementById("principalStudentSelect");
+  const principalCurrentStudentName = document.getElementById("principalCurrentStudentName");
+  const principalReportTableBody = document.querySelector("#principalReportTable tbody");
+  const principalTotalAverageCell = document.getElementById("principalTotalAverageCell");
+
+  // Show/hide class input depending on role
+  roleSelect.addEventListener("change", () => {
+    if (roleSelect.value === "teacher") {
+      classLabel.style.display = "block";
+    } else {
+      classLabel.style.display = "none";
+    }
+  });
+
+  // Login function
+  loginBtn.addEventListener("click", () => {
+    loginError.style.display = "none";
+    const role = roleSelect.value;
+    const name = loginName.value.trim();
+    const pass = loginPass.value.trim();
+    const userClass = loginClass.value.trim();
+
+    if (!name || !pass || (role === "teacher" && !userClass)) {
+      loginError.textContent = "Please fill all required fields.";
+      loginError.style.display = "block";
+      return;
     }
 
-    // Average cell
-    const avgTd = document.createElement("td");
-    avgTd.className = "average-cell";
-    avgTd.textContent = "-";
-    tr.appendChild(avgTd);
+    // Check user credentials
+    let user = null;
+    if (role === "teacher") {
+      user = users.teacher.find(u => u.name.toLowerCase() === name.toLowerCase() && u.class.toLowerCase() === userClass.toLowerCase() && u.password === pass);
+    } else {
+      user = users.principal.find(u => u.name.toLowerCase() === name.toLowerCase() && u.password === pass);
+    }
 
-    // Remove button cell
-    const removeTd = document.createElement("td");
-    const removeBtn = document.createElement("button");
-    removeBtn.textContent = "🗑️";
-    removeBtn.style.background = "#cc4444";
-    removeBtn.onclick = () => {
-      tr.remove();
-      updateTotalAverage();
-    };
-    removeTd.appendChild(removeBtn);
-    tr.appendChild(removeTd);
+    if (!user) {
+      loginError.textContent = "Invalid login info.";
+      loginError.style.display = "block";
+      return;
+    }
 
-    tbody.appendChild(tr);
+    currentUser = { role, name: user.name, class: userClass || null };
+    loginSection.classList.add("hidden");
+
+    if (role === "teacher") {
+      teacherSection.classList.remove("hidden");
+      loadStudentsForTeacher();
+    } else {
+      principalSection.classList.remove("hidden");
+      loadPrincipalStudentList();
+    }
+  });
+
+  // Logout function
+  function logout() {
+    currentUser = null;
+    currentStudent = null;
+    loginName.value = "";
+    loginClass.value = "";
+    loginPass.value = "";
+    loginError.style.display = "none";
+    teacherSection.classList.add("hidden");
+    principalSection.classList.add("hidden");
+    loginSection.classList.remove("hidden");
+  }
+  logoutBtn.addEventListener("click", logout);
+  logoutBtn2.addEventListener("click", logout);
+
+  // Load students - for teacher: only students of their class
+  function loadStudentsForTeacher() {
+    // Load from localStorage
+    const allData = JSON.parse(localStorage.getItem("studentsData")) || {};
+    studentsData = allData;
+
+    // Filter students by class (assuming student name encodes class or separate data needed)
+    // For demo, load all students for simplicity
+    studentSelect.innerHTML = "";
+    for (const studentName in studentsData) {
+      const option = document.createElement("option");
+      option.value = studentName;
+      option.textContent = studentName;
+      studentSelect.appendChild(option);
+    }
+
+    if (studentSelect.options.length === 0) {
+      currentStudent = null;
+      currentStudentNameSpan.textContent = "";
+      gradeSheetTableBody.innerHTML = "";
+      totalAverageCell.textContent = "-";
+    } else {
+      currentStudent = studentSelect.value;
+      currentStudentNameSpan.textContent = currentStudent;
+      loadGradeSheet(currentStudent);
+    }
   }
 
-  function updateRowAverage(row) {
-    let total = 0;
-    let count = 0;
-    for (let i = 1; i <= 6; i++) {
-      const input = row.cells[i].querySelector("input");
-      if (!input) continue;
-      const val = parseFloat(input.value);
-      if (!isNaN(val) && val >= 60 && val <= 100) {
-        total += val;
-        count++;
-      }
+  studentSelect.addEventListener("change", () => {
+    currentStudent = studentSelect.value;
+    currentStudentNameSpan.textContent = currentStudent;
+    loadGradeSheet(currentStudent);
+  });
+
+  addStudentBtn.addEventListener("click", () => {
+    newStudentNameInput.style.display = "inline-block";
+    saveNewStudentBtn.style.display = "inline-block";
+    addStudentBtn.style.display = "none";
+  });
+
+  saveNewStudentBtn.addEventListener("click", () => {
+    const newName = newStudentNameInput.value.trim();
+    if (!newName) {
+      alert("Enter a student name");
+      return;
     }
-    const avgCell = row.cells[7];
-    if (count === 0) {
-      avgCell.textContent = "-";
+    if (studentsData[newName]) {
+      alert("Student already exists");
+      return;
+    }
+    studentsData[newName] = { subjects: [], submitted: false };
+    saveDataToStorage();
+    newStudentNameInput.value = "";
+    newStudentNameInput.style.display = "none";
+    saveNewStudentBtn.style.display = "none";
+    addStudentBtn.style.display = "inline-block";
+
+    // Update select and select new student
+    const option = document.createElement("option");
+    option.value = newName;
+    option.textContent = newName;
+    studentSelect.appendChild(option);
+    studentSelect.value = newName;
+    currentStudent = newName;
+    currentStudentNameSpan.textContent = newName;
+    loadGradeSheet(newName);
+  });
+
+  // Load grade sheet for a student
+  function loadGradeSheet(student) {
+    gradeSheetTableBody.innerHTML = "";
+    const studentData = studentsData[student];
+    if (!studentData) return;
+
+    if(studentData.submitted){
+      // Disable editing, show data readonly
+      submitGradesBtn.disabled = true;
+      saveDraftBtn.disabled = true;
+      addSubjectBtn.disabled = true;
     } else {
-      const avg = total / count;
-      avgCell.textContent = avg.toFixed(2);
+      submitGradesBtn.disabled = false;
+      saveDraftBtn.disabled = false;
+      addSubjectBtn.disabled = false;
+    }
+
+    for (const subj of studentData.subjects) {
+      addSubjectRow(subj.name, subj.grades, studentData.submitted);
     }
     updateTotalAverage();
   }
 
-  function updateTotalAverage() {
-    let totalAvgSum = 0;
-    let subjectWithAvgCount = 0;
+  // Add subject row in table
+  function addSubjectRow(subjectName = "", grades = [], disabled=false) {
+    const tr = document.createElement("tr");
 
-    tbody.querySelectorAll("tr").forEach(row => {
-      const avgText = row.cells[7].textContent;
-      const avgVal = parseFloat(avgText);
-      if (!isNaN(avgVal)) {
-        totalAvgSum += avgVal;
-        subjectWithAvgCount++;
-      }
-    });
-
-    const totalAvgCell = document.getElementById("totalAverageCell");
-    if (subjectWithAvgCount === 0) {
-      totalAvgCell.textContent = "-";
-    } else {
-      totalAvgCell.textContent = (totalAvgSum / subjectWithAvgCount).toFixed(2);
-    }
-  }
-</script>
-
-</body>
-</html>
+    const subjectTd = document.createElement("td");
+    const subjectInput = document.createElement("input");
+    subjectInput.type = "text";
+    subjectInput.value = subjectName;
+    subjectInput.placeholder = "Subject";
+    subjectInput.style.width = "90%";
+    subjectInput.disabled = disabled;
+    subjectTd.appendChild(subjectInput);
+    tr
