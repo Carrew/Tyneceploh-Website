@@ -1,299 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Teacher Portal - Tyneceploh</title>
-<style>
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #fff0f6;
-    color: #4d0039;
-    margin: 20px;
-  }
-  h1 {
-    color: #b35979;
-  }
-  #welcome {
-    margin-bottom: 15px;
-    font-style: italic;
-  }
-  table {
-    border-collapse: collapse;
-    width: 100%;
-    max-width: 900px;
-    margin-bottom: 20px;
-  }
-  th, td {
-    border: 1px solid #b35979;
-    padding: 8px;
-    text-align: center;
-  }
-  th {
-    background-color: #e6a8bb;
-  }
-  input[type=number] {
-    width: 70px;
-    font-size: 1rem;
-    padding: 5px;
-    text-align: center;
-  }
-  .red {
-    background-color: #f8d7da;
-    color: #721c24;
-    font-weight: bold;
-  }
-  .blue {
-    background-color: #d1ecf1;
-    color: #0c5460;
-    font-weight: bold;
-  }
-  button {
-    background-color: #b35979;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 15px;
-    cursor: pointer;
-    font-weight: 700;
-    margin-right: 10px;
-    transition: background-color 0.3s ease;
-  }
-  button:hover {
-    background-color: #99335c;
-  }
-  #controls {
-    margin-bottom: 10px;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Teacher Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      padding: 20px;
+    }
+    .header {
+      background-color: brown;
+      color: white;
+      padding: 15px;
+      text-align: center;
+      border-radius: 10px;
+    }
+    .info {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+    th, td {
+      padding: 10px;
+      text-align: center;
+    }
+    input[type="text"], input[type="number"] {
+      width: 90%;
+      padding: 5px;
+    }
+    .controls button {
+      margin: 10px 5px;
+      padding: 10px;
+      background-color: brown;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .controls button:hover {
+      background-color: darkred;
+    }
+    .red { background-color: #ffcccc; }
+    .blue { background-color: #ccf2ff; }
+  </style>
 </head>
 <body>
+  <div class="header">
+    <h2>Teacher Portal</h2>
+  </div>
 
-<h1>Teacher Portal - Tyneceploh Educational Foundation</h1>
-<div id="welcome"></div>
+  <div class="info">
+    Logged in as: <span id="teacherName"></span> | Class: <span id="teacherClass"></span>
+  </div>
 
-<div id="controls">
-  <button id="addSubjectBtn">Add Subject Column</button>
-</div>
+  <div class="controls">
+    <button onclick="addStudentRow()">Add Student</button>
+    <button onclick="removeStudentRow()">Remove Student</button>
+    <button onclick="submitToPrincipal()">Submit Grades</button>
+  </div>
 
-<table id="gradesTable">
-  <thead>
-    <tr id="subjectsRow">
-      <th>Student Name</th>
-      <th>Subject 1</th>
-      <th>Average</th>
-      <th>Rank</th>
-      <th>Remove</th>
-    </tr>
-  </thead>
-  <tbody id="gradesBody">
-    <!-- Student rows go here -->
-  </tbody>
-</table>
+  <table id="gradeTable">
+    <thead>
+      <tr>
+        <th>Student Name</th>
+        <th>Subject 1</th>
+        <th>Subject 2</th>
+        <th>Subject 3</th>
+        <th>Average</th>
+        <th>Rank</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
-<button id="saveBtn">Save Report</button>
+  <script>
+    const teacher = JSON.parse(localStorage.getItem("teacherInfo"));
 
-<script>
-  // Demo student list (you can load dynamically later)
-  const students = [
-    "Alice Johnson",
-    "Bob Smith",
-    "Cindy Lee",
-    "David Kim",
-    "Eva Brown"
-  ];
+    if (!teacher) {
+      window.location.href = "teacher-login.html";
+    } else {
+      document.getElementById("teacherName").textContent = teacher.name;
+      document.getElementById("teacherClass").textContent = teacher.class;
+    }
 
-  // On load, check if logged in teacher info is available
-  const teacherName = sessionStorage.getItem('teacherName');
-  const teacherClass = sessionStorage.getItem('teacherClass');
-  const teacherPassword = sessionStorage.getItem('teacherPassword');
+    let studentData = [];
 
-  const welcomeDiv = document.getElementById('welcome');
-  const gradesBody = document.getElementById('gradesBody');
-  const subjectsRow = document.getElementById('subjectsRow');
-  const addSubjectBtn = document.getElementById('addSubjectBtn');
-  const saveBtn = document.getElementById('saveBtn');
+    function addStudentRow() {
+      const table = document.querySelector("#gradeTable tbody");
+      const row = table.insertRow();
+      const rowIndex = table.rows.length;
 
-  if(!teacherName || !teacherClass || !teacherPassword) {
-    alert('Not logged in. Redirecting to login page.');
-    window.location.href = 'teacher-login.html';
-  } else {
-    welcomeDiv.textContent = `Welcome, ${teacherName} (Class: ${teacherClass})`;
-  }
+      row.innerHTML = `
+        <td><input type="text" placeholder="Student ${rowIndex}" /></td>
+        <td><input type="number" min="60" max="100" oninput="updateAverage(this)" /></td>
+        <td><input type="number" min="60" max="100" oninput="updateAverage(this)" /></td>
+        <td><input type="number" min="60" max="100" oninput="updateAverage(this)" /></td>
+        <td class="average">-</td>
+        <td class="rank">-</td>
+      `;
+    }
 
-  // Track number of subjects (start with 1)
-  let subjectCount = 1;
-
-  // Initialize the table with students and inputs
-  function createTable() {
-    gradesBody.innerHTML = '';
-    students.forEach((student, idx) => {
-      const tr = document.createElement('tr');
-      tr.dataset.studentIndex = idx;
-
-      // Student Name
-      const tdName = document.createElement('td');
-      tdName.textContent = student;
-      tr.appendChild(tdName);
-
-      // Subject grades inputs (start with 1 subject)
-      for(let i=0; i<subjectCount; i++) {
-        const tdGrade = document.createElement('td');
-        const input = document.createElement('input');
-        input.type = 'number';
-        input.min = 60;
-        input.max = 100;
-        input.placeholder = '60-100';
-        input.addEventListener('input', () => {
-          validateInput(input);
-          updateAverageAndRank();
-        });
-        tdGrade.appendChild(input);
-        tr.appendChild(tdGrade);
+    function removeStudentRow() {
+      const table = document.querySelector("#gradeTable tbody");
+      if (table.rows.length > 0) {
+        table.deleteRow(-1);
       }
+    }
 
-      // Average cell
-      const tdAvg = document.createElement('td');
-      tdAvg.textContent = '-';
-      tr.appendChild(tdAvg);
-
-      // Rank cell
-      const tdRank = document.createElement('td');
-      tdRank.textContent = '-';
-      tr.appendChild(tdRank);
-
-      // Remove row button
-      const tdRemove = document.createElement('td');
-      const btnRemove = document.createElement('button');
-      btnRemove.textContent = 'Remove';
-      btnRemove.style.backgroundColor = '#cc4452';
-      btnRemove.addEventListener('click', () => {
-        students.splice(idx, 1);
-        createTable();
-        updateAverageAndRank();
-      });
-      tdRemove.appendChild(btnRemove);
-      tr.appendChild(tdRemove);
-
-      gradesBody.appendChild(tr);
-    });
-
-    updateAverageAndRank();
-  }
-
-  // Validate grade input, restrict 60 to 100
-  function validateInput(input) {
-    let val = input.value;
-    if(val === '') return;
-    val = Number(val);
-    if(val < 60) input.value = 60;
-    else if(val > 100) input.value = 100;
-  }
-
-  // Update averages and ranks for all students
-  function updateAverageAndRank() {
-    const rows = [...gradesBody.querySelectorAll('tr')];
-
-    // Calculate averages
-    rows.forEach(tr => {
-      const inputs = tr.querySelectorAll('td:nth-child(n+2):nth-child(-n+' + (1+subjectCount) + ') input');
-      let sum = 0;
+    function updateAverage(input) {
+      const row = input.parentElement.parentElement;
+      const inputs = row.querySelectorAll("input[type='number']");
+      let total = 0;
       let count = 0;
-      inputs.forEach(input => {
-        const val = Number(input.value);
-        if(!isNaN(val) && val >= 60 && val <= 100) {
-          sum += val;
+
+      inputs.forEach(inp => {
+        const val = parseInt(inp.value);
+        if (!isNaN(val)) {
+          total += val;
           count++;
         }
       });
-      const avg = count > 0 ? (sum / count).toFixed(2) : '-';
-      const avgTd = tr.querySelector('td:nth-child(' + (2+subjectCount) + ')');
-      avgTd.textContent = avg;
 
-      // Color average cell blue or red based on passing mark 70
-      if(avg !== '-') {
-        avgTd.className = avg >= 70 ? 'blue' : 'red';
+      const avgCell = row.querySelector(".average");
+      const rankCell = row.querySelector(".rank");
+      if (count === 3) {
+        const avg = Math.round(total / 3);
+        avgCell.textContent = avg;
+        avgCell.className = avg < 70 ? "average red" : "average blue";
+        rankCell.textContent = "-";
       } else {
-        avgTd.className = '';
+        avgCell.textContent = "-";
+        avgCell.className = "average";
+        rankCell.textContent = "-";
       }
-    });
 
-    // Sort students by average descending for ranking
-    const validRows = rows.filter(tr => tr.querySelector('td:nth-child(' + (2+subjectCount) + ')').textContent !== '-');
-    validRows.sort((a,b) => {
-      return Number(b.querySelector('td:nth-child(' + (2+subjectCount) + ')').textContent) - 
-             Number(a.querySelector('td:nth-child(' + (2+subjectCount) + ')').textContent);
-    });
+      calculateRankings();
+    }
 
-    // Assign ranks
-    validRows.forEach((tr, i) => {
-      const rankTd = tr.querySelector('td:nth-child(' + (3+subjectCount) + ')');
-      rankTd.textContent = i + 1;
-    });
-
-    // For students without averages, clear ranks
-    rows.filter(tr => !validRows.includes(tr)).forEach(tr => {
-      const rankTd = tr.querySelector('td:nth-child(' + (3+subjectCount) + ')');
-      rankTd.textContent = '-';
-    });
-  }
-
-  // Add a subject column
-  addSubjectBtn.addEventListener('click', () => {
-    subjectCount++;
-    // Add subject header
-    const th = document.createElement('th');
-    th.textContent = 'Subject ' + subjectCount;
-    // Insert before average column
-    subjectsRow.insertBefore(th, subjectsRow.children[subjectsRow.children.length - 3]);
-
-    // Add a grade input for each student row
-    const rows = [...gradesBody.querySelectorAll('tr')];
-    rows.forEach(tr => {
-      const tdGrade = document.createElement('td');
-      const input = document.createElement('input');
-      input.type = 'number';
-      input.min = 60;
-      input.max = 100;
-      input.placeholder = '60-100';
-      input.addEventListener('input', () => {
-        validateInput(input);
-        updateAverageAndRank();
+    function calculateRankings() {
+      const rows = [...document.querySelectorAll("#gradeTable tbody tr")];
+      const scores = rows.map(row => {
+        const name = row.cells[0].querySelector("input").value.trim();
+        const avg = parseInt(row.querySelector(".average").textContent);
+        return { row, avg: isNaN(avg) ? 0 : avg };
       });
-      tdGrade.appendChild(input);
-      // Insert before average cell
-      tr.insertBefore(tdGrade, tr.children[tr.children.length - 3]);
-    });
 
-    updateAverageAndRank();
-  });
+      scores.sort((a, b) => b.avg - a.avg);
 
-  // Save report (you can customize this to save to server or localStorage)
-  saveBtn.addEventListener('click', () => {
-    // Build a JSON object of student grades
-    const rows = [...gradesBody.querySelectorAll('tr')];
-    const report = [];
+      scores.forEach((obj, index) => {
+        obj.row.querySelector(".rank").textContent = obj.avg === 0 ? "-" : index + 1;
+      });
+    }
 
-    rows.forEach(tr => {
-      const studentName = tr.children[0].textContent;
-      const grades = [];
-      for(let i=1; i<=subjectCount; i++) {
-        const val = tr.children[i].querySelector('input').value;
-        grades.push(val === '' ? null : Number(val));
-      }
-      const avg = tr.children[1+subjectCount].textContent;
-      const rank = tr.children[2+subjectCount].textContent;
-      report.push({ studentName, grades, avg, rank });
-    });
-
-    // For now just show JSON in alert and also save to localStorage
-    localStorage.setItem('teacherReport', JSON.stringify(report));
-    alert('Report saved locally! You can expand this to submit to server.');
-  });
-
-  // Initialize table on page load
-  createTable();
-</script>
-
+    function submitToPrincipal() {
+      alert("Grades submitted to principal for review.");
+      localStorage.removeItem("teacherInfo");
+      window.location.href = "teacher-login.html";
+    }
+  </script>
 </body>
 </html>
