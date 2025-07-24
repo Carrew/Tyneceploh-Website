@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Teacher Portal - Tyneceploh Educational Foundation</title>
+  <title>Teacher Report Sheet - Tyneceploh</title>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Segoe UI', sans-serif;
       background-color: #fff0f6;
       color: #4d0039;
       margin: 0;
@@ -63,7 +63,6 @@
     }
 
     form {
-      margin-bottom: 40px;
       background-color: #ffe6f0;
       padding: 20px;
       border-radius: 10px;
@@ -71,18 +70,33 @@
     }
 
     label {
-      display: block;
-      margin-bottom: 8px;
       font-weight: bold;
+      margin-top: 10px;
+      display: block;
     }
 
-    input, select, textarea {
-      width: 100%;
+    input, select {
       padding: 10px;
       margin-bottom: 15px;
+      width: 100%;
+      font-size: 1rem;
       border: 1px solid #ccc;
       border-radius: 6px;
-      font-size: 1rem;
+    }
+
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
+
+    table, th, td {
+      border: 1px solid #b35979;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: center;
     }
 
     button {
@@ -93,11 +107,18 @@
       border: none;
       border-radius: 6px;
       cursor: pointer;
-      transition: background 0.3s ease;
+      transition: 0.3s ease;
+      margin-top: 20px;
     }
 
     button:hover {
       background-color: #99335c;
+    }
+
+    #average {
+      font-weight: bold;
+      margin-top: 15px;
+      font-size: 1.1rem;
     }
 
     footer {
@@ -105,21 +126,15 @@
       padding: 15px;
       background-color: #b35979;
       color: white;
-      font-size: 0.9rem;
       margin-top: 30px;
-    }
-
-    @media (max-width: 600px) {
-      nav {
-        flex-direction: column;
-      }
+      font-size: 0.9rem;
     }
   </style>
 </head>
 <body>
 
 <header>
-  Teacher Portal
+  Teacher Report Sheet
 </header>
 
 <nav>
@@ -129,44 +144,46 @@
 </nav>
 
 <main>
-  <h2>Enter Student Grades</h2>
-  <form>
-    <label for="student-name">Student Name:</label>
-    <input type="text" id="student-name" name="student-name" required>
+  <h2>Create Report Sheet</h2>
+  <form id="reportForm">
+    <label for="student">Student Name:</label>
+    <input type="text" id="student" name="student" required>
 
     <label for="grade">Grade/Class:</label>
-    <select id="grade" name="grade" required>
-      <option value="">Select Grade</option>
-      <option>1st Grade</option>
-      <option>2nd Grade</option>
-      <option>3rd Grade</option>
-      <option>4th Grade</option>
-      <option>5th Grade</option>
-      <option>6th Grade</option>
-      <option>7th Grade</option>
-      <option>8th Grade</option>
-      <option>9th Grade</option>
-    </select>
+    <input type="text" id="grade" name="grade" required>
 
-    <label for="subject">Subject:</label>
-    <input type="text" id="subject" name="subject" required>
+    <table id="gradesTable">
+      <thead>
+        <tr>
+          <th>Subject</th>
+          <th>Score (0-100)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><input type="text" name="subject1" required></td>
+          <td><input type="number" name="score1" min="0" max="100" class="score-input" required></td>
+        </tr>
+        <tr>
+          <td><input type="text" name="subject2" required></td>
+          <td><input type="number" name="score2" min="0" max="100" class="score-input" required></td>
+        </tr>
+        <tr>
+          <td><input type="text" name="subject3" required></td>
+          <td><input type="number" name="score3" min="0" max="100" class="score-input" required></td>
+        </tr>
+        <tr>
+          <td><input type="text" name="subject4"></td>
+          <td><input type="number" name="score4" min="0" max="100" class="score-input"></td>
+        </tr>
+        <tr>
+          <td><input type="text" name="subject5"></td>
+          <td><input type="number" name="score5" min="0" max="100" class="score-input"></td>
+        </tr>
+      </tbody>
+    </table>
 
-    <label for="score">Score:</label>
-    <input type="number" id="score" name="score" min="0" max="100" required>
-
-    <button type="submit">Submit Grade</button>
-  </form>
-
-  <h2>Create Report Sheet</h2>
-  <form>
-    <label for="report-student">Student Name:</label>
-    <input type="text" id="report-student" name="report-student" required>
-
-    <label for="report-grade">Grade/Class:</label>
-    <input type="text" id="report-grade" name="report-grade" required>
-
-    <label for="report-details">Report Details (subjects, grades, comments):</label>
-    <textarea id="report-details" name="report-details" rows="6" required></textarea>
+    <div id="average">Average Score: <span id="avgValue">0</span></div>
 
     <button type="submit">Send Report to Principal</button>
   </form>
@@ -175,6 +192,28 @@
 <footer>
   &copy; 2025 Tyneceploh Educational Foundation
 </footer>
+
+<script>
+  const scoreInputs = document.querySelectorAll('.score-input');
+  const avgValue = document.getElementById('avgValue');
+
+  function calculateAverage() {
+    let total = 0;
+    let count = 0;
+    scoreInputs.forEach(input => {
+      const value = parseFloat(input.value);
+      if (!isNaN(value)) {
+        total += value;
+        count++;
+      }
+    });
+    avgValue.textContent = count ? (total / count).toFixed(2) : '0';
+  }
+
+  scoreInputs.forEach(input => {
+    input.addEventListener('input', calculateAverage);
+  });
+</script>
 
 </body>
 </html>
