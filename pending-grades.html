@@ -1,106 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Pending Grades – Principal Dashboard</title>
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pending Grades - Principal Review</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #fff0f5;
       padding: 20px;
+      background: #fff0f5;
+      color: #4d0039;
     }
-
     h1 {
-      color: #8b5e3c;
+      text-align: center;
+      color: #b35979;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #8b5e3c;
+      padding: 10px;
       text-align: center;
     }
-
-    .grade-entry {
-      background: #ffe6f0;
-      border: 1px solid #8b5e3c;
-      padding: 15px;
-      margin-bottom: 15px;
-      border-radius: 10px;
+    th {
+      background-color: #ffe6f0;
+      color: #4d0039;
     }
-
-    .grade-entry p {
-      margin: 5px 0;
-    }
-
-    .actions {
-      margin-top: 10px;
-    }
-
-    .actions button {
-      margin-right: 10px;
+    button {
       padding: 5px 10px;
+      margin: 2px;
       border: none;
       border-radius: 5px;
       cursor: pointer;
     }
-
-    .approve {
+    .approve-btn {
       background-color: #4CAF50;
       color: white;
     }
-
-    .reject {
+    .reject-btn {
       background-color: #f44336;
       color: white;
+    }
+    #noData {
+      margin-top: 30px;
+      text-align: center;
+      font-style: italic;
+      color: #a64d79;
     }
   </style>
 </head>
 <body>
   <h1>Pending Grades for Approval</h1>
-  <div id="gradesContainer">Loading pending grades...</div>
+  <table id="pendingTable">
+    <thead>
+      <tr>
+        <th>Teacher</th>
+        <th>Student Name</th>
+        <th>Subject</th>
+        <th>Grade</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="pendingBody">
+      <!-- Pending grades will be loaded here -->
+    </tbody>
+  </table>
+  <p id="noData" class="hidden">No pending grades for approval.</p>
 
   <script>
-    const container = document.getElementById("gradesContainer");
+    // Use localStorage keys:
+    // "submittedGrades" = array of {teacher, student, subject, grade, status:"pending"}
+    // "approvedGrades" = array of approved grades
+
+    const pendingBody = document.getElementById('pendingBody');
+    const noDataMsg = document.getElementById('noData');
 
     function loadPendingGrades() {
-      const pending = JSON.parse(localStorage.getItem("pendingGrades")) || [];
-      if (pending.length === 0) {
-        container.innerHTML = "<p>No pending grades to review.</p>";
+      const submittedGrades = JSON.parse(localStorage.getItem('submittedGrades')) || [];
+      const pendingGrades = submittedGrades.filter(g => g.status === 'pending');
+
+      pendingBody.innerHTML = '';
+      if (pendingGrades.length === 0) {
+        noDataMsg.classList.remove('hidden');
         return;
       }
+      noDataMsg.classList.add('hidden');
 
-      container.innerHTML = "";
-      pending.forEach((entry, index) => {
-        const div = document.createElement("div");
-        div.className = "grade-entry";
-        div.innerHTML = `
-          <p><strong>Student:</strong> ${entry.student}</p>
-          <p><strong>Class:</strong> ${entry.class}</p>
-          <p><strong>Subject:</strong> ${entry.subject}</p>
-          <p><strong>Score:</strong> ${entry.score}</p>
-          <div class="actions">
-            <button class="approve" onclick="approveGrade(${index})">Approve</button>
-            <button class="reject" onclick="rejectGrade(${index})">Reject</button>
-          </div>
+      pendingGrades.forEach((grade, index) => {
+        const row = document.createElement('tr');
+
+        row.innerHTML = `
+          <td>${grade.teacher}</td>
+          <td>${grade.student}</td>
+          <td>${grade.subject}</td>
+          <td>${grade.grade}</td>
+          <td>${grade.status}</td>
+          <td>
+            <button class="approve-btn" onclick="approveGrade(${index})">Approve</button>
+            <button class="reject-btn" onclick="rejectGrade(${index})">Reject</button>
+          </td>
         `;
-        container.appendChild(div);
+
+        pendingBody.appendChild(row);
       });
     }
 
     function approveGrade(index) {
-      let pending = JSON.parse(localStorage.getItem("pendingGrades")) || [];
-      const approvedGrade = pending.splice(index, 1)[0];
+      const submittedGrades = JSON.parse(localStorage.getItem('submittedGrades')) || [];
+      const approvedGrades = JSON.parse(localStorage.getItem('approvedGrades')) || [];
 
-      let results = JSON.parse(localStorage.getItem("finalGrades")) || [];
-      results.push(approvedGrade);
-      localStorage.setItem("finalGrades", JSON.stringify(results));
-      localStorage.setItem("pendingGrades", JSON.stringify(pending));
+      submittedGrades[index].status = 'approved';
+      approvedGrades.push(submittedGrades[index]);
+
+      // Save updates
+      localStorage.setItem('submittedGrades', JSON.stringify(submittedGrades));
+      localStorage.setItem('approvedGrades', JSON.stringify(approvedGrades));
+
+      alert('Grade approved.');
       loadPendingGrades();
     }
 
     function rejectGrade(index) {
-      let pending = JSON.parse(localStorage.getItem("pendingGrades")) || [];
-      pending.splice(index, 1);
-      localStorage.setItem("pendingGrades", JSON.stringify(pending));
+      const submittedGrades = JSON.parse(localStorage.getItem('submittedGrades')) || [];
+      submittedGrades[index].status = 'rejected';
+
+      localStorage.setItem('submittedGrades', JSON.stringify(submittedGrades));
+      alert('Grade rejected.');
       loadPendingGrades();
     }
 
+    // Initialize on page load
     window.onload = loadPendingGrades;
   </script>
 </body>
