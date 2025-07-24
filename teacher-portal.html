@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Teacher Portal - Tyneceploh Educational Foundation</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #fff0f6;
+      color: #4d0039;
+      margin: 0; padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background-color: #b35979;
+      padding: 18px 0;
+      color: white;
+      font-size: 1.8rem;
+      text-align: center;
+      font-weight: bold;
+      letter-spacing: 1.1px;
+      box-shadow: 0 3px 6px rgba(179, 89, 121, 0.5);
+    }
+    nav {
+      background: #b35979;
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      padding: 12px 0;
+      border-radius: 0 0 15px 15px;
+      box-shadow: inset 0 -3px 8px rgba(255, 230, 240, 0.3);
+    }
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.1rem;
+      padding: 8px 18px;
+      border-radius: 8px;
+      background: #d97ea9;
+      box-shadow: 0 2px 4px rgba(179, 89, 121, 0.4);
+      transition: background 0.3s ease;
+    }
+    nav a:hover {
+      background: #fff0f6;
+      color: #b35979;
+      box-shadow: 0 4px 8px rgba(179, 89, 121, 0.7);
+    }
+    main {
+      max-width: 900px;
+      margin: 30px auto 40px;
+      padding: 0 15px;
+      flex-grow: 1;
+    }
+    h2 {
+      color: #b35979;
+      margin-bottom: 10px;
+      font-size: 1.7rem;
+      letter-spacing: 1px;
+      text-align: center;
+    }
+    form {
+      background: #ffe6f0;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(179, 89, 121, 0.2);
+      margin-bottom: 25px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #4d0039;
+    }
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 8px 10px;
+      margin-bottom: 18px;
+      border-radius: 6px;
+      border: 1.8px solid #b35979;
+      font-size: 1rem;
+      color: #4d0039;
+    }
+    .subjects-container {
+      margin-bottom: 20px;
+    }
+    .subject-entry {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 12px;
+    }
+    .subject-entry input {
+      flex: 1;
+    }
+    button {
+      background-color: #b35979;
+      color: white;
+      font-weight: 700;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 3px 6px rgba(179, 89, 121, 0.5);
+      transition: background-color 0.3s ease;
+      font-size: 1.1rem;
+    }
+    button:hover {
+      background-color: #d97ea9;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      box-shadow: 0 2px 6px rgba(179, 89, 121, 0.2);
+      background: #fff0f6;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #d97ea9;
+      color: #4d0039;
+      font-weight: 600;
+    }
+    th {
+      background-color: #b35979;
+      color: white;
+    }
+    @media (max-width: 600px) {
+      .subject-entry {
+        flex-direction: column;
+      }
+      nav {
+        flex-direction: column;
+        gap: 15px;
+      }
+      nav a {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>Teacher Portal</header>
+
+<nav>
+  <a href="teacher-portal.html">Enter Grades</a>
+  <a href="teacher-announcements.html">Announcements</a>
+  <a href="teacher-login.html">Logout</a>
+</nav>
+
+<main>
+  <h2>Welcome, Teacher</h2>
+
+  <form id="gradeForm" autocomplete="off">
+    <label for="studentName">Student Full Name</label>
+    <input type="text" id="studentName" required placeholder="Enter student full name" />
+
+    <div class="subjects-container" id="subjectsContainer">
+      <div class="subject-entry">
+        <input type="text" class="subject-name" placeholder="Subject name" required />
+        <input type="number" class="subject-grade" placeholder="Grade (0-100)" min="0" max="100" required />
+      </div>
+    </div>
+
+    <button type="button" id="addSubjectBtn">Add Another Subject</button>
+    <button type="submit" style="margin-left: 10px;">Submit Grades</button>
+  </form>
+
+  <section id="gradesDisplay" style="display:none;">
+    <h3>Entered Grades</h3>
+    <table id="gradesTable" aria-label="Entered grades table">
+      <thead>
+        <tr>
+          <th>Student Name</th>
+          <th>Subject</th>
+          <th>Grade</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Entries will appear here -->
+      </tbody>
+    </table>
+  </section>
+</main>
+
+<script>
+  const subjectsContainer = document.getElementById('subjectsContainer');
+  const addSubjectBtn = document.getElementById('addSubjectBtn');
+  const gradeForm = document.getElementById('gradeForm');
+  const gradesDisplay = document.getElementById('gradesDisplay');
+  const gradesTableBody = document.querySelector('#gradesTable tbody');
+
+  // Add new subject input fields
+  addSubjectBtn.addEventListener('click', () => {
+    const div = document.createElement('div');
+    div.className = 'subject-entry';
+    div.innerHTML = `
+      <input type="text" class="subject-name" placeholder="Subject name" required />
+      <input type="number" class="subject-grade" placeholder="Grade (0-100)" min="0" max="100" required />
+    `;
+    subjectsContainer.appendChild(div);
+  });
+
+  // Handle form submission
+  gradeForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const studentName = document.getElementById('studentName').value.trim();
+    if (!studentName) {
+      alert('Please enter the student name.');
+      return;
+    }
+
+    // Clear previous table rows
+    gradesTableBody.innerHTML = '';
+
+    // Collect all subjects and grades
+    const subjectNames = [...document.querySelectorAll('.subject-name')].map(input => input.value.trim());
+    const subjectGrades = [...document.querySelectorAll('.subject-grade')].map(input => input.value);
+
+    // Validate inputs
+    for (let i = 0; i < subjectNames.length; i++) {
+      if (!subjectNames[i]) {
+        alert(`Subject name #${i+1} is empty.`);
+        return;
+      }
+      let grade = Number(subjectGrades[i]);
+      if (isNaN(grade) || grade < 0 || grade > 100) {
+        alert(`Grade for subject "${subjectNames[i]}" must be a number between 0 and 100.`);
+        return;
+      }
+    }
+
+    // Display grades in table
+    subjectNames.forEach((subj, i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${studentName}</td>
+        <td>${subj}</td>
+        <td>${subjectGrades[i]}</td>
+      `;
+      gradesTableBody.appendChild(tr);
+    });
+
+    gradesDisplay.style.display = 'block';
+
+    // Optionally clear the form (comment out if you want to keep data)
+    gradeForm.reset();
+
+    // Reset subjects to one input only
+    subjectsContainer.innerHTML = `
+      <div class="subject-entry">
+        <input type="text" class="subject-name" placeholder="Subject name" required />
+        <input type="number" class="subject-grade" placeholder="Grade (0-100)" min="0" max="100" required />
+      </div>
+    `;
+  });
+</script>
+
+</body>
+</html>
