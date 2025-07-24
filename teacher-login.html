@@ -1,82 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Teacher Login - Tyneceploh</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      padding: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-    }
-    .login-container {
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px gray;
-      max-width: 400px;
-      width: 100%;
-    }
-    input, button {
-      width: 100%;
-      margin: 10px 0;
-      padding: 12px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-    button {
-      background: brown;
-      color: white;
-      cursor: pointer;
-    }
-    button:hover {
-      background: darkred;
-    }
-  </style>
-</head>
-<body>
-  <div class="login-container">
-    <h2>Teacher Login</h2>
-    <form id="loginForm">
-      <input type="text" id="teacherName" placeholder="Enter Your Name" required />
-      <input type="text" id="teacherClass" placeholder="Enter Your Class (e.g. Grade 4A)" required />
-      <input type="password" id="teacherPassword" placeholder="Password" required />
-      <button type="submit">Login</button>
-    </form>
-    <p id="errorMessage" style="color:red;"></p>
-  </div>
+<script>
+  const teacherAccounts = [
+    { name: "Mr. Doe", class: "Grade 5A", password: "pass123" },
+    { name: "Ms. Grace", class: "Grade 6", password: "grace123" },
+    { name: "Mr. Mark", class: "Grade 9", password: "mark123" }
+  ];
 
-  <script>
-    const teacherAccounts = [
-      { name: "Mr. Doe", class: "Grade 5A", password: "pass123" },
-      { name: "Miss Smith", class: "Grade 6B", password: "smith456" },
-      // Add more teachers here
-    ];
+  function handleLogin() {
+    const name = document.getElementById("name").value.trim();
+    const className = document.getElementById("class").value.trim();
+    const password = document.getElementById("password").value;
 
-    document.getElementById("loginForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const name = document.getElementById("teacherName").value.trim();
-      const cls = document.getElementById("teacherClass").value.trim();
-      const pwd = document.getElementById("teacherPassword").value.trim();
+    const found = teacherAccounts.find(account =>
+      account.name === name &&
+      account.class === className &&
+      account.password === password
+    );
 
-      const found = teacherAccounts.find(t => 
-        t.name.toLowerCase() === name.toLowerCase() && 
-        t.class.toLowerCase() === cls.toLowerCase() && 
-        t.password === pwd
-      );
-
-      if (found) {
-        localStorage.setItem("teacherInfo", JSON.stringify(found));
-        window.location.href = "teacher.html";
-      } else {
-        document.getElementById("errorMessage").textContent = "Invalid login info. Try again.";
-      }
-    });
-  </script>
-</body>
-</html>
+    if (found) {
+      localStorage.setItem("teacherName", found.name);
+      localStorage.setItem("teacherClass", found.class);
+      // Redirect to teacher.html now (not teacher_dashboard.html)
+      window.location.href = `teacher.html?name=${encodeURIComponent(found.name)}&class=${encodeURIComponent(found.class)}`;
+    } else {
+      alert("Invalid login credentials.");
+    }
+  }
+</script>
