@@ -1,96 +1,105 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Teacher Portal</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      background: #f2f2f2;
-    }
-    h2 {
-      color: #333;
-    }
-    .grade-form {
-      background: #fff;
-      padding: 20px;
-      max-width: 600px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    input, select, button {
-      padding: 10px;
-      margin: 10px 0;
-      width: 100%;
-      box-sizing: border-box;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-    button {
-      background: #333;
-      color: white;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #555;
-    }
-    .info {
-      margin-bottom: 20px;
-    }
+    body { font-family: Arial, sans-serif; padding: 20px; background-color: #f0f0f0; }
+    h2, h3 { color: #333; }
+    label, input, button { display: block; margin: 10px 0; padding: 8px; width: 100%; max-width: 400px; }
+    table { width: 100%; max-width: 700px; border-collapse: collapse; margin-top: 20px; }
+    th, td { padding: 10px; border: 1px solid #ccc; text-align: left; }
+    .logout { margin-top: 30px; }
+    #printButton { margin-top: 20px; display: none; }
   </style>
 </head>
 <body>
-  <div class="info">
-    <h2>Welcome, <span id="teacherName"></span> (Class: <span id="teacherClass"></span>)</h2>
-  </div>  <form class="grade-form" onsubmit="submitGrades(event)">
-    <h3>Submit Student Grade</h3>
-    <input type="text" id="studentName" placeholder="Student Full Name" required />
-    <select id="subject" required>
-      <option value="">Select Subject</option>
-      <option value="Mathematics">Mathematics</option>
-      <option value="English">English</option>
-      <option value="Science">Science</option>
-      <option value="History">History</option>
-      <option value="Civics">Civics</option>
-    </select>
-    <input type="number" id="period1" placeholder="Period 1 Score" required />
-    <input type="number" id="period2" placeholder="Period 2 Score" required />
-    <input type="number" id="period3" placeholder="Period 3 Score" required />
-    <input type="number" id="period4" placeholder="Period 4 Score" required />
-    <input type="number" id="period5" placeholder="Period 5 Score" required />
-    <input type="number" id="period6" placeholder="Period 6 Score" required />
-    <button type="submit">Submit Grade</button>
-  </form>  <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const teacherName = urlParams.get('username');
-    const teacherClass = urlParams.get('class');
 
-    document.getElementById("teacherName").textContent = teacherName || "Unknown";
-    document.getElementById("teacherClass").textContent = teacherClass || "N/A";
+  <h2>Welcome, <span id="teacherNameDisplay"></span> - <span id="classDisplay"></span></h2>
 
-    function submitGrades(e) {
-      e.preventDefault();
+  <h3>Enter Grades</h3>
+  <form id="gradeForm">
+    <label for="studentName">Student Name:</label>
+    <input type="text" id="studentName" required />
 
-      const data = {
-        teacher: teacherName,
-        class: teacherClass,
-        student: document.getElementById("studentName").value.trim(),
-        subject: document.getElementById("subject").value,
-        grades: [
-          parseFloat(document.getElementById("period1").value),
-          parseFloat(document.getElementById("period2").value),
-          parseFloat(document.getElementById("period3").value),
-          parseFloat(document.getElementById("period4").value),
-          parseFloat(document.getElementById("period5").value),
-          parseFloat(document.getElementById("period6").value)
-        ]
-      };
+    <label for="subject">Subject:</label>
+    <input type="text" id="subject" required />
 
-      // For now, log to console (replace with backend call later)
-      console.log("Submitted Grade Data:", data);
-      alert("Grade submitted successfully for " + data.student);
-      document.querySelector(".grade-form").reset();
+    <label for="grade">Grade:</label>
+    <input type="text" id="grade" required />
+
+    <button type="button" onclick="addGrade()">Add to Table</button>
+  </form>
+
+  <table id="gradeTable">
+    <thead>
+      <tr>
+        <th>Student</th>
+        <th>Subject</th>
+        <th>Grade</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <button onclick="submitGrades()">Submit Grades to Principal</button>
+
+  <button id="printButton" onclick="window.print()">Print Approved Grades</button>
+
+  <div class="logout">
+    <button onclick="logout()">Log Out</button>
+  </div>
+
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const username = urlParams.get("username");
+  const className = urlParams.get("class");
+
+  document.getElementById("teacherNameDisplay").textContent = username;
+  document.getElementById("classDisplay").textContent = className;
+
+  function addGrade() {
+    const student = document.getElementById("studentName").value.trim();
+    const subject = document.getElementById("subject").value.trim();
+    const grade = document.getElementById("grade").value.trim();
+
+    if (student && subject && grade) {
+      const table = document.getElementById("gradeTable").getElementsByTagName("tbody")[0];
+      const row = table.insertRow();
+      row.insertCell(0).textContent = student;
+      row.insertCell(1).textContent = subject;
+      row.insertCell(2).textContent = grade;
+      row.insertCell(3).textContent = "Pending";
+
+      // Clear inputs
+      document.getElementById("studentName").value = "";
+      document.getElementById("subject").value = "";
+      document.getElementById("grade").value = "";
     }
-  </script></body>
+  }
+
+  function submitGrades() {
+    const rows = document.querySelectorAll("#gradeTable tbody tr");
+    if (rows.length === 0) {
+      alert("No grades to submit.");
+      return;
+    }
+
+    // Simulate principal approval for demo
+    rows.forEach(row => {
+      row.cells[3].textContent = "Approved";
+    });
+
+    alert("Grades submitted and approved by principal!");
+    document.getElementById("printButton").style.display = "inline-block";
+  }
+
+  function logout() {
+    window.location.href = "teacher-login.html";
+  }
+</script>
+
+</body>
 </html>
