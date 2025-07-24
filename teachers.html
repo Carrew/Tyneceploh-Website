@@ -175,6 +175,30 @@
       document.getElementById("printBtn").classList.remove("hidden");
       document.getElementById("approveBtn").classList.add("hidden");
     }
-  </script>
+  </script> 
+  let loggedInTeacher = null; // will store info about who is logged in
+  const credentials = [
+  { name: "John", class: "Grade 5", password: "pass" },
+  { name: "Mr. Doe", class: "Grade 5A", password: "pass123" }
+];
+
+function login() {
+  const name = document.getElementById("teacherName").value.trim();
+  const className = document.getElementById("teacherClass").value.trim();
+  const password = document.getElementById("teacherPassword").value;
+
+  const match = credentials.find(
+    c => c.name === name && c.class === className && c.password === password
+  );
+
+  if (match) {
+    loggedInTeacher = match;
+    document.getElementById("login-section").style.display = "none";
+    document.getElementById("main-section").style.display = "block";
+    document.getElementById("welcome").textContent = `Welcome, ${name} (${className})`;
+  } else {
+    alert("Invalid login info. Please try again.");
+  }
+}
 </body>
 </html>
